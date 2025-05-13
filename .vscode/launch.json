@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TestingPolygonIO",
+            "request": "launch",
+            "mainClass": "oop.grp1.TestingPolygonIO",
+            "projectName": "stockApp"
+        },
+        {
+            "type": "java",
+            "name": "TestingAlphaVantage",
+            "request": "launch",
+            "mainClass": "oop.grp1.TestingAlphaVantage",
+            "projectName": "stockApp"
+        },
+        {
+            "type": "java",
             "name": "JsonToSQL",
             "request": "launch",
             "mainClass": "oop.grp1.Utils.JsonToSQL",

@@ -11,7 +11,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class PolygonIO {
 
     private static final Dotenv dotenv = Dotenv.load();
-    public static final String API_KEY = dotenv.get("PolygonIO_API_KEY");    
+    private static final String API_KEY = dotenv.get("PolygonIO_API_KEY");    
     public String getData(String symbol) {
         try {
             URI uri = buildURI(symbol);
