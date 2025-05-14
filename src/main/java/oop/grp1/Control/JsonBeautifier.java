@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 public class JsonBeautifier {
-
     public static String beautify(String rawJson) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement jsonElement = JsonParser.parseString(rawJson);

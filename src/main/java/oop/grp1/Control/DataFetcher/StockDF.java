@@ -13,7 +13,7 @@ import java.net.URISyntaxException;
 public class StockDF {
 
     private static final Dotenv dotenv = Dotenv.load();
-    private static final String API_KEY = dotenv.get("ALPHA_VANTAGE_API_KEY");
+    private static final String API_KEY = dotenv.get("ALPHA_VANTAGE_API_KEY1");
 
     public String getData(String symbol) {
         try {
