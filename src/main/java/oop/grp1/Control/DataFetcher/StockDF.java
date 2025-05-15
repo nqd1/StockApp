@@ -10,19 +10,17 @@ import java.net.URL;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.net.URISyntaxException;
 
-public class StockDF {
-
+public class StockDF extends DFAbstract {
     private static final Dotenv dotenv = Dotenv.load();
     private static final String API_KEY = dotenv.get("ALPHA_VANTAGE_API_KEY1");
 
-    public String getData(String symbol) {
+    @Override
+    public String fetch(String symbol) {
         try {
             URI uri = buildURI(symbol);
             URL url = uri.toURL();
-
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
@@ -38,25 +36,22 @@ public class StockDF {
             } else {
                 return "Error HTTP " + responseCode;
             }
-
         } catch (URISyntaxException | IOException e) {
             return "Exception: " + e.getMessage();
         }
     }
-
+    
     private URI buildURI(String symbol) throws URISyntaxException {
         String query = String.format(
             "function=TIME_SERIES_INTRADAY&symbol=%s&interval=5min&outputsize=compact&apikey=%s",
             symbol, API_KEY
-        );
-
+            );
         return new URI(
-            "https",
-            "www.alphavantage.co",
-            "/query",
-            query,
+            "https", 
+            "www.alphavantage.co", 
+            "/query", 
+            query, 
             null
-        );
+            );
     }
-
 }

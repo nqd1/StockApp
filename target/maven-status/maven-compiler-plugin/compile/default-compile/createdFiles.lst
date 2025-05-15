@@ -1,5 +1,9 @@
+oop\grp1\Control\JsonBeautifier.class
+oop\grp1\Testing.class
+oop\grp1\TestingAlphaVantage.class
+oop\grp1\Control\DBManager\NewsManager.class
 oop\grp1\App.class
-oop\grp1\Utils\JsonToSQLite.class
-oop\grp1\Utils\JsonBeautifier.class
-oop\grp1\Utils\DataFetcher.class
-oop\grp1\TestingUtils.class
+oop\grp1\Control\DataFetcher\StockDF.class
+oop\grp1\Control\DBManager\UserManager.class
+oop\grp1\Control\DataFetcher\NewsDF.class
+oop\grp1\Control\DBManager\StockManager.class

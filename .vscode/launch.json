@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Testing",
+            "request": "launch",
+            "mainClass": "oop.grp1.Testing",
+            "projectName": "stockApp"
+        },
+        {
+            "type": "java",
             "name": "TestingPolygonIO",
             "request": "launch",
             "mainClass": "oop.grp1.TestingPolygonIO",
