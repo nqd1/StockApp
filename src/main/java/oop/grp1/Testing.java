@@ -10,7 +10,7 @@ public class Testing{
         List<String> top30Stocks = Arrays.asList("AAPL","MSFT","GOOGL","AMZN","TSLA","NVDA","META","BRK.B","UNH","JNJ","V","PG","JPM","HD","MA","XOM","PFE","KO","PEP","BAC","MRK","ABBV","WMT","CVX","DIS","CSCO","ORCL","INTC","T","VZ");
         NewsManager manager = new NewsManager();
         for(String ticker : top30Stocks){
-            manager.tickerToSQLite(ticker);
+            manager.fetchAndStore(ticker);
         }
     }
 }
