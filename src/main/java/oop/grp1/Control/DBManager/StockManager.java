@@ -8,18 +8,23 @@ import oop.grp1.Control.DataFetcher.StockDF;
 import java.sql.*;
 import java.util.*;
 
-public class StockManager {
-
+public class StockManager extends DBManager {
     private static final String DB_URL = "jdbc:sqlite:stockAV.db";
 
-    public static void SymbolToSQLite(String symbol) {
-        StockDF dataFetcher = new StockDF();
-        String data = dataFetcher.getData(symbol);
-        System.out.println(JsonBeautifier.beautify(data));
-        saveJsonToDatabase(data);    
+    public StockManager() {
+        super(DB_URL);
     }
-    
-    public static void saveJsonToDatabase(String json) {
+
+    @Override
+    public void fetchAndStore(String symbol) {
+        StockDF dataFetcher = new StockDF();
+        String data = dataFetcher.fetch(symbol);
+        System.out.println(JsonBeautifier.beautify(data));
+        saveToDB(data);
+    }
+
+    @Override
+    public void saveToDB(String json) {
         try {
             JsonObject jsonObj = JsonParser.parseString(json).getAsJsonObject();
 
@@ -34,20 +39,21 @@ public class StockManager {
                 return;
             }
 
-            Connection conn = DriverManager.getConnection(DB_URL);
+            Connection conn = getConnection();
 
             String createTable = """
                 CREATE TABLE IF NOT EXISTS stock_data (
                     ticker TEXT,
-                    volume TEXT,
-                    open TEXT,
-                    close TEXT,
-                    high TEXT,
-                    low TEXT,
+                    volume INTEGER,
+                    open REAL,
+                    close REAL,
+                    high REAL,
+                    low REAL,
                     timestamp TEXT,
                     PRIMARY KEY (ticker, timestamp)
                 );
             """;
+
             Statement stmt = conn.createStatement();
             stmt.execute(createTable);
 
@@ -69,14 +75,14 @@ public class StockManager {
 
                 // Prepare insertion for new data
                 PreparedStatement insertStmt = conn.prepareStatement(
-                    "INSERT INTO stock_data (ticker, volume, open, close, high, low, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?);"
+                        "INSERT INTO stock_data (ticker, volume, open, close, high, low, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?);"
                 );
                 insertStmt.setString(1, ticker);
-                insertStmt.setString(2, values.get("5. volume").getAsString());
-                insertStmt.setString(3, values.get("1. open").getAsString());
-                insertStmt.setString(4, values.get("4. close").getAsString());
-                insertStmt.setString(5, values.get("2. high").getAsString());
-                insertStmt.setString(6, values.get("3. low").getAsString());
+                insertStmt.setInt(2, Integer.parseInt(values.get("5. volume").getAsString()));
+                insertStmt.setDouble(3, Double.parseDouble(values.get("1. open").getAsString()));
+                insertStmt.setDouble(4, Double.parseDouble(values.get("4. close").getAsString()));
+                insertStmt.setDouble(5, Double.parseDouble(values.get("2. high").getAsString()));
+                insertStmt.setDouble(6, Double.parseDouble(values.get("3. low").getAsString()));
                 insertStmt.setString(7, time);
                 insertStmt.executeUpdate();
             }
@@ -87,7 +93,5 @@ public class StockManager {
             System.err.println("Error while saving JSON to SQLite:");
             e.printStackTrace();
         }
-
-        
     }
 }
