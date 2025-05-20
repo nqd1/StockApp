@@ -9,5 +9,8 @@
         <module name="stockApp" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="oop_project_chungkhoan" target="23" />
+    </bytecodeTargetLevel>
   </component>
 </project>
