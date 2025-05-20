@@ -6,11 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="oop_project_chungkhoan" />
         <module name="stockApp" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="oop_project_chungkhoan" target="23" />
-    </bytecodeTargetLevel>
   </component>
 </project>

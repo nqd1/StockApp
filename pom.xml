@@ -127,7 +127,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>GUI.Main</mainClass> <!-- Sửa đúng tên class có hàm main -->
+                    <mainClass>oop.grp1.GUI.Main</mainClass> <!-- Sửa đúng tên class có hàm main -->
                 </configuration>
             </plugin>
         </plugins>

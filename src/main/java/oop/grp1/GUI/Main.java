@@ -1,4 +1,4 @@
-package GUI;
+package oop.grp1.GUI;
 
 import javafx.application.Application;
 import javafx.scene.Scene;

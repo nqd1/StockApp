@@ -1,10 +1,3 @@
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\GUI\ChatbotPage.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\GUI\DashboardPage.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\GUI\Main.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\GUI\MainLayout.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\GUI\MarkdownUtils.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\GUI\PageManager.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\GUI\Sidebar.java
 C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\App.java
 C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\DataFetcher\DFAbstract.java
 C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\DataFetcher\NewsDF.java
@@ -13,6 +6,13 @@ C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\D
 C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\DBManager\NewsManager.java
 C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\DBManager\StockManager.java
 C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\JsonBeautifier.java
+C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\ChatbotPage.java
+C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\DashboardPage.java
+C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\Main.java
+C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\MainLayout.java
+C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\MarkdownUtils.java
+C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\PageManager.java
+C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\Sidebar.java
 C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Testing.java
 C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\TestingAlphaVantage.java
 C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\org\example\Main.java

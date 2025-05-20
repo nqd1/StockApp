@@ -1,4 +1,4 @@
-package GUI;
+package oop.grp1.GUI;
 public class PageManager {
     public DashboardPage getDashboardPage() {
         return new DashboardPage();

@@ -1,4 +1,4 @@
-package GUI;
+package oop.grp1.GUI;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.NodeOrientation;

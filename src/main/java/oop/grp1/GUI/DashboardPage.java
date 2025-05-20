@@ -1,4 +1,4 @@
-package GUI;
+package oop.grp1.GUI;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
