@@ -1,5 +1,6 @@
 package oop.grp1.GUI;
 
+import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 
 public class MainLayout extends BorderPane {
@@ -9,8 +10,11 @@ public class MainLayout extends BorderPane {
     public MainLayout() {
         pageManager = new PageManager();
 
+        // Create stockDetailButton using JavaFX Button
+        Button stockDetailButton = new Button("Stock Detail");
+
         // Initialize Sidebar with callbacks
-        sidebar = new Sidebar(this::handleNavigation);
+        sidebar = new Sidebar(this::handleNavigation, stockDetailButton);
         this.setLeft(sidebar);
 
         // Set Initial Content
@@ -25,9 +29,12 @@ public class MainLayout extends BorderPane {
             case "Chatbot":
                 setContent(pageManager.getChatbotPage());
                 break;
-//            case "UserDetail":
-//                setContent(pageManager.getUserDetail());
-//                break;
+            case "Watchlist":
+                setContent(pageManager.getWatchListPage());
+                break;
+            case "StockDetail":
+                setContent(pageManager.getStockDetail());
+                break;
             default:
                 System.out.println("Unknown page: " + page);
         }
