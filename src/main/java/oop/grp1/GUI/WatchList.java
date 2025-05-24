@@ -25,7 +25,7 @@ public class WatchList extends VBox {
         watchListTable.setEditable(true);
         watchListTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Định nghĩa các cột tương tự như StockDetail
+
         TableColumn<StockDetail.StockWithInterest, String> ticColumn = new TableColumn<>("tic");
         ticColumn.setCellValueFactory(new PropertyValueFactory<>("stockCode"));
 

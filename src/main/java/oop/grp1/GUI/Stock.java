@@ -3,9 +3,10 @@ package oop.grp1.GUI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
+// cai nay de test thoi nhe
+// dung quan tam
 public class Stock {
-    private String stockCode;    // Mã cổ phiếu
+    private String stockCode;
     private long volume;         // Khối lượng giao dịch
     private double openPrice;    // Giá mở cửa
     private double highPrice;    // Giá cao nhất

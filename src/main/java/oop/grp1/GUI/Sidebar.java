@@ -52,7 +52,7 @@ public class Sidebar extends VBox {
         this.stockDetailButton.setPrefHeight(40);
         this.stockDetailButton.setMaxWidth(Double.MAX_VALUE);
 
-        // Initial visibility for buttons
+
         setButtonsVisibility(false);
 
         dashboardButton.setOnAction(e -> onNavigate.accept("Dashboard"));

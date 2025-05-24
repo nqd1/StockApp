@@ -2,7 +2,7 @@ package oop.grp1.GUI;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import oop.grp1.GUI.StockDetail.StockWithInterest; // Thêm import rõ ràng
+import oop.grp1.GUI.StockDetail.StockWithInterest;
 
 public class PageManager {
     private final DashboardPage dashboardPage;
@@ -17,12 +17,12 @@ public class PageManager {
         watchListPage = new WatchList();
         stockData = FXCollections.observableArrayList();
 
-        // Khởi tạo dữ liệu mẫu cho cổ phiếu
+
         for (Stock stock : Stock.generateSampleStocks(5)) {
             stockData.add(new StockWithInterest(stock));
         }
         stockDetailPage = new StockDetail();
-        stockDetailPage.getStockTable().setItems(stockData); // Sử dụng danh sách chung
+        stockDetailPage.getStockTable().setItems(stockData);
     }
 
     public DashboardPage getDashboardPage() {
@@ -43,8 +43,7 @@ public class PageManager {
 
     public StockDetail getStockDetailPage(Stock stock) {
         if (stock != null) {
-            stockDetailPage.updateStock(stock); // Cập nhật dữ liệu cho stock cụ thể
-            // Đồng bộ trạng thái "Quan tâm"
+            stockDetailPage.updateStock(stock);
             StockWithInterest newStock = stockDetailPage.getStockTable().getItems().get(0);
             for (StockWithInterest existingStock : stockData) {
                 if (existingStock.getStockCode().equals(newStock.getStockCode())) {
@@ -53,7 +52,7 @@ public class PageManager {
                 }
             }
         } else {
-            stockDetailPage.updateStock(null); // Xóa dữ liệu nếu không có stock
+            stockDetailPage.updateStock(null); 
         }
         return stockDetailPage;
     }
