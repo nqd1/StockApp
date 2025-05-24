@@ -1,4 +1,12 @@
 package oop.grp1.GUI;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import oop.grp1.Control.DataFetcher.Chatbot;
+import oop.grp1.Control.Model.ChatResponse;
+
+import com.google.gson.Gson;
+
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.NodeOrientation;
@@ -16,6 +24,9 @@ public class ChatbotPage extends VBox {
     private final TextField inputField;
     private final Button sendButton;
     private final ScrollPane scrollPane;
+
+    Chatbot chatbot = new Chatbot();
+    Gson gson = new Gson();
 
     public ChatbotPage() {
         // Khung chứa tin nhắn (VBox)
@@ -76,17 +87,15 @@ public class ChatbotPage extends VBox {
             addMessage(userMessage, true);
             inputField.clear();
 
-            // Phản hồi từ chatbot
-//            String botResponse = getChatbotResponse(userMessage);
-//            addMessage(botResponse, false);
+            ChatResponse response = chatbot.processQuery(userMessage);
 
+            String jsonResponse = gson.toJson(response);
+            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+            String responseContent = jsonObject.get("responseContent").getAsString();
 
-            String markdown = "# Tiêu đề\n\nĐây là đoạn **markdown** với *định dạng*.\n" +
-                    "# Tiêu đề\n\nĐây là đoạn **markdown** với *định dạng*.ejfgaenwfkaewjfaewfaew hihihihihi con cho duc beo lol dcm me may\n" +
-                    "# Tiêu đề\n\nĐây là đoạn **markdown** với *định dạng*.\n" +
-                    "# Tiêu đề\n\nĐây là đoạn **markdown** với *định dạng*.\n" +
-                    "# Tiêu đề\n\nĐây là đoạn **markdown** với *định dạng*.\n";
-            String html = MarkdownUtils.convertToHtml(markdown);
+            addMessage(responseContent, false);
+
+            String html = MarkdownUtils.convertToHtml(responseContent);
 //            addMessage(html, false);
             WebView webView = new WebView();
             webView.getEngine().loadContent(html);
@@ -150,13 +159,5 @@ public class ChatbotPage extends VBox {
         }
 
         messageContainer.getChildren().add(messageBox);
-    }
-
-
-    private String getChatbotResponse(String message) {
-//         Giả lập phản hồi đơn giản
-        return "I'm just a simple bot. You said: " + message;
-
-
     }
 }

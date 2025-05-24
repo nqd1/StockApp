@@ -1,18 +1,21 @@
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\App.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\DataFetcher\DFAbstract.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\DataFetcher\NewsDF.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\DataFetcher\StockDF.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\DBManager\DBManager.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\DBManager\NewsManager.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\DBManager\StockManager.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Control\JsonBeautifier.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\ChatbotPage.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\DashboardPage.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\Main.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\MainLayout.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\MarkdownUtils.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\PageManager.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\GUI\Sidebar.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\Testing.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\oop\grp1\TestingAlphaVantage.java
-C:\Users\ADMIN\Downloads\oop_project_chungkhoan\src\main\java\org\example\Main.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\App.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\Control\DataFetcher\Chatbot.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\Control\DataFetcher\DFAbstract.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\Control\DataFetcher\NewsDF.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\Control\DataFetcher\StockDF.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\Control\DBManager\ChatbotManager.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\Control\DBManager\DBManager.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\Control\DBManager\NewsManager.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\Control\DBManager\StockManager.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\Control\JsonBeautifier.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\Control\Model\ChatResponse.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\GUI\ChatbotPage.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\GUI\DashboardPage.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\GUI\Main.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\GUI\MainLayout.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\GUI\MarkdownUtils.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\GUI\PageManager.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\GUI\Sidebar.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\Testing.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\oop\grp1\TestingAlphaVantage.java
+C:\Users\HOANG VINH\Documents\Course\StockApp\src\main\java\org\example\Main.java
