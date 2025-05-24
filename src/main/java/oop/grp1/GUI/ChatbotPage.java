@@ -93,12 +93,14 @@ public class ChatbotPage extends VBox {
             JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
             String responseContent = jsonObject.get("responseContent").getAsString();
 
-            addMessage(responseContent, false);
+            // addMessage(responseContent, false);
 
             String html = MarkdownUtils.convertToHtml(responseContent);
 //            addMessage(html, false);
             WebView webView = new WebView();
-            webView.getEngine().loadContent(html);
+            webView.getEngine().loadContent("<div style='padding: 10px;'>" + html + "</div>");
+
+            
             HBox messageBox = new HBox(webView);
             messageBox.setPadding(new Insets(5));
             messageBox.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
