@@ -8,6 +8,10 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         Scene scene = new Scene(new MainLayout(), 800, 600);
+        
+        // Add CSS for hiding scrollbars
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+        
         primaryStage.setTitle("Stock Management App");
         primaryStage.setScene(scene);
         primaryStage.show();

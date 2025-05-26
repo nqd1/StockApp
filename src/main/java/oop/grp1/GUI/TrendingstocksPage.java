@@ -9,8 +9,11 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import oop.grp1.Model.Stock;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TrendingstocksPage extends VBox {
     private final TableView<StockData> topTrendingTable;
@@ -67,17 +70,23 @@ public class TrendingstocksPage extends VBox {
         TableView<StockData> table = new TableView<>();
 
         TableColumn<StockData, String> nameColumn = new TableColumn<>("Tên cổ phiếu");
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));        
         TableColumn<StockData, Double> priceColumn = new TableColumn<>("Giá");
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
 
         table.getColumns().addAll(nameColumn, priceColumn);
-table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        
+        // Đặt độ cao cố định để hiển thị chính xác 10 hàng
+        table.setFixedCellSize(25);
+        table.setPrefHeight(270); // Chiều cao cho 10 hàng + header + padding
+        
+        // Tắt thanh cuộn
+        table.setStyle("-fx-background-color: white;");
+        table.getStyleClass().add("no-scroll-bar");
+        
         return table;
-    }
-
-    @SuppressWarnings("unchecked")
+    }    @SuppressWarnings("unchecked")
     private TableView<StockChangeData> createStockChangeTable() {
         TableView<StockChangeData> table = new TableView<>();
 
@@ -88,40 +97,85 @@ table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         changeColumn.setCellValueFactory(new PropertyValueFactory<>("change"));
 
         table.getColumns().addAll(nameColumn, changeColumn);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        
+        // Đặt độ cao cố định để hiển thị chính xác 10 hàng
+        table.setFixedCellSize(25);
+        table.setPrefHeight(270); // Chiều cao cho 10 hàng + header + padding
+        
+        // Tắt thanh cuộn
+        table.setStyle("-fx-background-color: white;");
+        table.getStyleClass().add("no-scroll-bar");
+        
         return table;
     }
+       private void loadTopTrendingData() {
+        // Danh sách các ticker mặc định theo thứ tự
+        List<String> defaultTickers = List.of("AAPL", "MSFT", "AMZN", "GOOGL", "GOOG", "META", "TSLA", "NVDA", "COMP", "V");
+        
+        List<StockData> topTrendingData = new ArrayList<>();
+        
+        // Tạo danh sách cổ phiếu với thứ tự đã định trước
+        for (String ticker : defaultTickers) {
+            Stock stock = Stock.getLatestStock(ticker);
+            if (stock != null) {
+                topTrendingData.add(new StockData(ticker, stock.getClose()));
+            }
+        }
+        
+        // Nếu không đủ 10 thì bổ sung thêm từ danh sách tất cả các ticker
+        if (topTrendingData.size() < 10) {
+            List<Stock> additionalStocks = Stock.getAllTickers().stream()
+                .filter(ticker -> !defaultTickers.contains(ticker))
+                .map(Stock::getLatestStock)
+                .filter(stock -> stock != null)
+                .limit(10 - topTrendingData.size())
+                .collect(Collectors.toList());
+                
+            for (Stock stock : additionalStocks) {
+                topTrendingData.add(new StockData(stock.getTicker(), stock.getClose()));
+            }
+        }
+        
+        // Thiết lập đúng 10 hàng trong bảng, không có hàng trống
+        topTrendingTable.setFixedCellSize(25); // Chiều cao cố định cho mỗi hàng
+        topTrendingTable.setPrefHeight(270); // Chiều cao cho 10 hàng + header + padding
+        topTrendingTable.getItems().clear();
+        topTrendingTable.getItems().addAll(topTrendingData.subList(0, Math.min(10, topTrendingData.size())));
+    }    private void loadTopGiamGiaData() {
+        List<Stock> allBearishStocks = Stock.getAllTickers().stream()
+            .map(Stock::getLatestStock)
+            .filter(stock -> stock != null && stock.isBearish())
+            .sorted((a, b) -> Double.compare(a.getPercentageChange(), b.getPercentageChange())) // giảm giá nhiều nhất lên trên
+            .limit(10)
+            .collect(Collectors.toList());
 
-    private void loadTopTrendingData() {
-        List<StockData> topTrending = List.of(
-            new StockData("Stock A", 100),
-            new StockData("Stock B", 200),
-            new StockData("Stock C", 300),
-            new StockData("Stock D", 400),
-            new StockData("Stock E", 500)
-        );
-        topTrendingTable.getItems().addAll(topTrending);
-    }
+        List<StockData> topGiamGiaData = allBearishStocks.stream()
+            .map(stock -> new StockData(stock.getTicker(), stock.getClose()))
+            .collect(Collectors.toList());
 
-    private void loadTopGiamGiaData() {
-        List<StockData> topGiamGia = List.of(
-            new StockData("Stock F", 90),
-            new StockData("Stock G", 80),
-            new StockData("Stock H", 70),
-            new StockData("Stock I", 60),
-            new StockData("Stock J", 50)
-        );
-        topGiamGiaTable.getItems().addAll(topGiamGia);
-    }
+        // Thiết lập đúng 10 hàng trong bảng, không có hàng trống
+        topGiamGiaTable.setFixedCellSize(25); // Chiều cao cố định cho mỗi hàng
+        topGiamGiaTable.setPrefHeight(270); // Chiều cao cho 10 hàng + header + padding
+        topGiamGiaTable.getItems().clear();
+        topGiamGiaTable.getItems().addAll(topGiamGiaData);
+    }    private void loadTopThayDoiData() {
+        List<Stock> allVolatileStocks = Stock.getAllTickers().stream()
+            .map(Stock::getLatestStock)
+            .filter(stock -> stock != null)
+            .sorted((a, b) -> Double.compare(b.getVolatility(), a.getVolatility())) // biến động nhiều nhất lên trên
+            .limit(10)
+            .collect(Collectors.toList());
 
-    private void loadTopThayDoiData() {
-        List<StockChangeData> topThayDoi = List.of(
-            new StockChangeData("Stock K", 15),
-            new StockChangeData("Stock L", 12),
-            new StockChangeData("Stock M", 10),
-            new StockChangeData("Stock N", 8),
-            new StockChangeData("Stock O", 5)
-        );
-        topThayDoiTable.getItems().addAll(topThayDoi);
+        List<StockChangeData> topThayDoiData = allVolatileStocks.stream()
+            .map(stock -> new StockChangeData(stock.getTicker(), stock.getVolatility()))
+            .collect(Collectors.toList());
+
+        // Thiết lập đúng 10 hàng trong bảng, không có hàng trống
+        topThayDoiTable.setFixedCellSize(25); // Chiều cao cố định cho mỗi hàng
+        topThayDoiTable.setPrefHeight(270); // Chiều cao cho 10 hàng + header + padding
+        topThayDoiTable.getItems().clear();
+        topThayDoiTable.getItems().addAll(topThayDoiData);
     }
 
     public static class StockData {
