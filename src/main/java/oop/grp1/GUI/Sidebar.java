@@ -18,6 +18,7 @@ public class Sidebar extends VBox {
     private final Button stockDetailButton;
     private final Button userdetailButton;
     private final Button watchlistButton;
+    private final Button viewStockDetailButton;
     private final double expandedWidth = 150;
     private final double collapsedWidth = 50;
     private final Label logoLabel;
@@ -25,21 +26,19 @@ public class Sidebar extends VBox {
     public Sidebar(Consumer<String> onNavigate, Button stockDetailButton) {
         this.stockDetailButton = stockDetailButton;
 
-        // Initial state: Collapsed
         this.setPrefWidth(collapsedWidth);
         this.setStyle("-fx-background-color: #000000;");
-//        this.setSpacing(10);
 
-        // Logo
         logoLabel = new Label("Logo");
         logoLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-alignment: center;");
         this.getChildren().add(logoLabel);
 
-        // Navigation Buttons with Icons
         dashboardButton = createButton("Dashboard", "/images/conlonduc.png");
         chatbotButton = createButton("Chatbot", "/images/conlonduc.png");
         userdetailButton = createButton("User Detail", "/images/conlonduc.png");
         watchlistButton = createButton("Watchlist", "/images/conlonduc.png");
+        viewStockDetailButton = createButton("View Stock Chart", "/images/conlonduc.png");
+
         this.stockDetailButton.setStyle(
                 "-fx-pref-width: 150;" +
                         "-fx-text-fill: white;" +
@@ -52,7 +51,6 @@ public class Sidebar extends VBox {
         this.stockDetailButton.setPrefHeight(40);
         this.stockDetailButton.setMaxWidth(Double.MAX_VALUE);
 
-
         setButtonsVisibility(false);
 
         dashboardButton.setOnAction(e -> onNavigate.accept("Dashboard"));
@@ -60,15 +58,13 @@ public class Sidebar extends VBox {
         userdetailButton.setOnAction(e -> onNavigate.accept("UserDetail"));
         watchlistButton.setOnAction(e -> onNavigate.accept("Watchlist"));
         stockDetailButton.setOnAction(e -> onNavigate.accept("StockDetail"));
-        this.getChildren().addAll(dashboardButton, chatbotButton, userdetailButton, watchlistButton, stockDetailButton);
+        viewStockDetailButton.setOnAction(e -> onNavigate.accept("ViewStockDetail"));
 
+        this.getChildren().addAll(dashboardButton, chatbotButton, userdetailButton, watchlistButton, stockDetailButton, viewStockDetailButton);
 
-        // Mouse events for expand/collapse
         this.setOnMouseEntered(e -> expandSidebar());
         this.setOnMouseExited(e -> collapseSidebar());
     }
-
-
 
     private Button createButton(String text, String iconPath) {
         ImageView icon = new ImageView(getClass().getResource(iconPath).toExternalForm());
@@ -78,16 +74,15 @@ public class Sidebar extends VBox {
         Button button = new Button(text, icon);
         button.setStyle(
                 "-fx-pref-width: 150;" +
-                        "-fx-text-fill: white;" + // Màu chữ đen để tương phản với nền trắng
-                        "-fx-background-color: #1a1a1a;" + // Nền trắng
-                        "-fx-background-radius: 5;" + // Bo góc cho nút
-                        // "-fx-border-color: #cccccc;" + // Viền xám nhạt
-                        "-fx-border-width: 1;" // Độ dày viền
+                        "-fx-text-fill: white;" +
+                        "-fx-background-color: #1a1a1a;" +
+                        "-fx-background-radius: 5;" +
+                        "-fx-border-width: 1;"
         );
-        button.setContentDisplay(ContentDisplay.LEFT); // Căn chỉnh icon và text theo chiều ngang
-        button.setAlignment(Pos.CENTER_LEFT); // Căn chỉnh toàn bộ nội dung sang trái
-        button.setPrefHeight(40); // Chiều cao cố định
-        button.setMaxWidth(Double.MAX_VALUE); // Đảm bảo nút chiếm toàn bộ chiều rộng
+        button.setContentDisplay(ContentDisplay.LEFT);
+        button.setAlignment(Pos.CENTER_LEFT);
+        button.setPrefHeight(40);
+        button.setMaxWidth(Double.MAX_VALUE);
         return button;
     }
 
@@ -95,12 +90,12 @@ public class Sidebar extends VBox {
         Timeline expand = new Timeline(
                 new KeyFrame(Duration.millis(300), new KeyValue(this.prefWidthProperty(), expandedWidth))
         );
-        expand.setOnFinished(finishEvent -> setButtonsVisibility(true)); // Show text after expanding
+        expand.setOnFinished(finishEvent -> setButtonsVisibility(true));
         expand.play();
     }
 
     private void collapseSidebar() {
-        setButtonsVisibility(false); // Hide text before collapsing
+        setButtonsVisibility(false);
         Timeline collapse = new Timeline(
                 new KeyFrame(Duration.millis(300), new KeyValue(this.prefWidthProperty(), collapsedWidth))
         );
@@ -111,5 +106,7 @@ public class Sidebar extends VBox {
         dashboardButton.setText(visible ? "Dashboard" : "");
         chatbotButton.setText(visible ? "Chatbot" : "");
         userdetailButton.setText(visible ? "User Detail" : "");
+        watchlistButton.setText(visible ? "Watchlist" : "");
+        viewStockDetailButton.setText(visible ? "View Stock Chart" : "");
     }
 }

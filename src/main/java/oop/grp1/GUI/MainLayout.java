@@ -10,14 +10,10 @@ public class MainLayout extends BorderPane {
     public MainLayout() {
         pageManager = new PageManager();
 
-        // Create stockDetailButton using JavaFX Button
         Button stockDetailButton = new Button("Stock Detail");
-
-        // Initialize Sidebar with callbacks
         sidebar = new Sidebar(this::handleNavigation, stockDetailButton);
         this.setLeft(sidebar);
 
-        // Set Initial Content
         setContent(pageManager.getDashboardPage());
     }
 
@@ -33,7 +29,10 @@ public class MainLayout extends BorderPane {
                 setContent(pageManager.getWatchListPage());
                 break;
             case "StockDetail":
-                setContent(pageManager.getStockDetail());
+                setContent(pageManager.getStockDetailPageByTicker("AAPL")); // Replace with dynamic ticker
+                break;
+            case "ViewStockDetail":
+                setContent(pageManager.getViewStockDetailPage());
                 break;
             default:
                 System.out.println("Unknown page: " + page);

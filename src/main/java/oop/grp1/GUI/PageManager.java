@@ -9,6 +9,7 @@ public class PageManager {
     private final ChatbotPage chatbotPage;
     private final WatchList watchListPage;
     private final StockDetail stockDetailPage;
+    private final ViewStockDetail viewStockDetailPage;
     private final ObservableList<StockWithInterest> stockData;
 
     public PageManager() {
@@ -17,12 +18,11 @@ public class PageManager {
         watchListPage = new WatchList();
         stockData = FXCollections.observableArrayList();
 
-
-        for (Stock stock : Stock.generateSampleStocks(5)) {
-            stockData.add(new StockWithInterest(stock));
-        }
         stockDetailPage = new StockDetail();
+        stockData.addAll(stockDetailPage.getStockData());
         stockDetailPage.getStockTable().setItems(stockData);
+
+        viewStockDetailPage = new ViewStockDetail();
     }
 
     public DashboardPage getDashboardPage() {
@@ -42,8 +42,8 @@ public class PageManager {
     }
 
     public StockDetail getStockDetailPage(Stock stock) {
+        stockDetailPage.updateStock(stock);
         if (stock != null) {
-            stockDetailPage.updateStock(stock);
             StockWithInterest newStock = stockDetailPage.getStockTable().getItems().get(0);
             for (StockWithInterest existingStock : stockData) {
                 if (existingStock.getStockCode().equals(newStock.getStockCode())) {
@@ -51,9 +51,30 @@ public class PageManager {
                     break;
                 }
             }
-        } else {
-            stockDetailPage.updateStock(null); 
         }
         return stockDetailPage;
+    }
+
+    public StockDetail getStockDetailPageByTicker(String ticker) {
+        stockDetailPage.updateStockByTicker(ticker);
+        if (!stockDetailPage.getStockData().isEmpty()) {
+            StockWithInterest newStock = stockDetailPage.getStockTable().getItems().get(0);
+            for (StockWithInterest existingStock : stockData) {
+                if (existingStock.getStockCode().equals(newStock.getStockCode())) {
+                    newStock.setInterested(existingStock.isInterested());
+                    break;
+                }
+            }
+        }
+        return stockDetailPage;
+    }
+
+    public ViewStockDetail getViewStockDetailPage() {
+        return viewStockDetailPage;
+    }
+
+    public ViewStockDetail getViewStockDetailPageByTicker(String ticker) {
+        viewStockDetailPage.updateChartByTicker(ticker);
+        return viewStockDetailPage;
     }
 }
