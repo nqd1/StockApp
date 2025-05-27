@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/src/main/java/oop/grp1/Control/DBManager/ChatbotManager.java" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/src/main/java/oop/grp1/Control/DBManager/NewsManager.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/oop/grp1/Control/DBManager/StockManager.java" dialect="GenericSQL" />
   </component>

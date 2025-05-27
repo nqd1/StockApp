@@ -13,9 +13,9 @@ import javafx.util.Duration;
 
 import java.util.function.Consumer;
 
-public class Sidebar extends VBox {
-    private final Button dashboardButton;
+public class Sidebar extends VBox {    private final Button dashboardButton;
     private final Button chatbotButton;
+    private final Button newsButton;
     private final Button userdetailButton;
     private final double expandedWidth = 150;
     private final double collapsedWidth = 50;
@@ -30,21 +30,19 @@ public class Sidebar extends VBox {
         // Logo
         logoLabel = new Label("Logo");
         logoLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-alignment: center;");
-        this.getChildren().add(logoLabel);
-
-        // Navigation Buttons with Icons
+        this.getChildren().add(logoLabel);        // Navigation Buttons with Icons
         dashboardButton = createButton("Dashboard", "/images/conlonduc.png");
         chatbotButton = createButton("Chatbot", "/images/conlonduc.png");
+        newsButton = createButton("Tin tức", "/images/conlonduc.png");
         userdetailButton = createButton("User Detail", "/images/conlonduc.png");
 
         // Initial visibility for buttons
-        setButtonsVisibility(false);
-
-        dashboardButton.setOnAction(e -> onNavigate.accept("Dashboard"));
+        setButtonsVisibility(false);        dashboardButton.setOnAction(e -> onNavigate.accept("Dashboard"));
         chatbotButton.setOnAction(e -> onNavigate.accept("Chatbot"));
+        newsButton.setOnAction(e -> onNavigate.accept("News"));
         userdetailButton.setOnAction(e -> onNavigate.accept("UserDetail"));
 
-        this.getChildren().addAll(dashboardButton, chatbotButton, userdetailButton);
+        this.getChildren().addAll(dashboardButton, chatbotButton, newsButton, userdetailButton);
 
         // Mouse events for expand/collapse
         this.setOnMouseEntered(e -> expandSidebar());
@@ -86,11 +84,10 @@ public class Sidebar extends VBox {
                 new KeyFrame(Duration.millis(300), new KeyValue(this.prefWidthProperty(), collapsedWidth))
         );
         collapse.play();
-    }
-
-    private void setButtonsVisibility(boolean visible) {
+    }    private void setButtonsVisibility(boolean visible) {
         dashboardButton.setText(visible ? "Dashboard" : "");
         chatbotButton.setText(visible ? "Chatbot" : "");
+        newsButton.setText(visible ? "Tin tức" : "");
         userdetailButton.setText(visible ? "User Detail" : "");
     }
 }

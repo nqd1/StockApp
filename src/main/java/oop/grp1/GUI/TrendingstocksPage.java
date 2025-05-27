@@ -142,7 +142,8 @@ public class TrendingstocksPage extends VBox {
         topTrendingTable.setPrefHeight(270); // Chiều cao cho 10 hàng + header + padding
         topTrendingTable.getItems().clear();
         topTrendingTable.getItems().addAll(topTrendingData.subList(0, Math.min(10, topTrendingData.size())));
-    }    private void loadTopGiamGiaData() {
+    }    
+    private void loadTopGiamGiaData() {
         List<Stock> allBearishStocks = Stock.getAllTickers().stream()
             .map(Stock::getLatestStock)
             .filter(stock -> stock != null && stock.isBearish())
@@ -159,7 +160,8 @@ public class TrendingstocksPage extends VBox {
         topGiamGiaTable.setPrefHeight(270); // Chiều cao cho 10 hàng + header + padding
         topGiamGiaTable.getItems().clear();
         topGiamGiaTable.getItems().addAll(topGiamGiaData);
-    }    private void loadTopThayDoiData() {
+    } 
+    private void loadTopThayDoiData() {
         List<Stock> allVolatileStocks = Stock.getAllTickers().stream()
             .map(Stock::getLatestStock)
             .filter(stock -> stock != null)

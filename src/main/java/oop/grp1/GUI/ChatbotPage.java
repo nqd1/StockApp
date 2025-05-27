@@ -17,6 +17,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.web.WebView;
+import javafx.scene.layout.Region;
 
 
 public class ChatbotPage extends VBox {
@@ -87,34 +88,78 @@ public class ChatbotPage extends VBox {
             addMessage(userMessage, true);
             inputField.clear();
 
-            ChatResponse response = chatbot.processQuery(userMessage);
-
+            ChatResponse response = chatbot.processQuery(userMessage);            
             String jsonResponse = gson.toJson(response);
             JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
             String responseContent = jsonObject.get("responseContent").getAsString();
 
             // addMessage(responseContent, false);
-
             String html = MarkdownUtils.convertToHtml(responseContent);
-//            addMessage(html, false);
-            WebView webView = new WebView();
-            webView.getEngine().loadContent("<div style='padding: 10px;'>" + html + "</div>");
-
             
+            // Tạo WebView với nội dung HTML
+            WebView webView = new WebView();
+            
+            // Ràng buộc chiều rộng WebView với chiều rộng của messageContainer (trừ padding)
+            webView.prefWidthProperty().bind(messageContainer.widthProperty().subtract(30));
+            
+            // Thiết lập các thuộc tính cho WebView
+            webView.setMinHeight(50);
+            webView.setPrefHeight(Region.USE_COMPUTED_SIZE);
+            webView.setMaxHeight(Double.MAX_VALUE);            
+            // Tạo CSS để tự động điều chỉnh kích thước nội dung và loại bỏ thanh cuộn
+            String customCSS = "<style>" +
+                               "body { width: 95%; margin: 0; padding: 10px 25px 10px 10px; word-wrap: break-word; overflow: hidden; }" +
+                               "pre { white-space: pre-wrap; }" +
+                               "code { white-space: pre-wrap; }" +
+                               "html, body { height: auto; overflow: visible; }" +
+                               "</style>";
+                               
+            // Load nội dung HTML với CSS tùy chỉnh
+            webView.getEngine().loadContent(customCSS + "<div id='content'>" + html + "</div>");
+            
+            // HBox chứa WebView
             HBox messageBox = new HBox(webView);
             messageBox.setPadding(new Insets(5));
             messageBox.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
+            HBox.setHgrow(webView, Priority.ALWAYS);
             messageContainer.getChildren().add(messageBox);
-
-            // Tự động cuộn đến đầu của tin nhắn chatbot
-            Platform.runLater(() -> {
-                double messageBoxY = messageBox.getBoundsInParent().getMinY();
-                double containerHeight = messageContainer.getBoundsInParent().getHeight();
-                double scrollPaneHeight = scrollPane.getViewportBounds().getHeight();
-
-                // Tính toán giá trị Vvalue
-                double vValue = messageBoxY / (containerHeight - scrollPaneHeight);
-                scrollPane.setVvalue(vValue);
+              // Tự động điều chỉnh chiều cao của WebView dựa trên nội dung
+            webView.getEngine().getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+                if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                    // Sử dụng JavaScript để lấy chiều cao thực tế của nội dung
+                    Platform.runLater(() -> {
+                        try {
+                            // Sử dụng scrollHeight để đảm bảo lấy được toàn bộ chiều cao của nội dung
+                            Object result = webView.getEngine().executeScript(
+                                "Math.max(document.body.scrollHeight, document.documentElement.scrollHeight, " +
+                                "document.body.offsetHeight, document.documentElement.offsetHeight, " +
+                                "document.body.clientHeight, document.documentElement.clientHeight);"
+                            );
+                            if (result instanceof Number) {
+                                double height = ((Number) result).doubleValue();
+                                webView.setPrefHeight(height + 30); // thêm padding dư để đảm bảo không có scroll
+                                
+                                // Thêm đoạn code để vô hiệu hóa scrollbar trong WebView
+                                webView.getEngine().executeScript(
+                                    "document.body.style.overflow='hidden';" +
+                                    "document.documentElement.style.overflow='hidden';"
+                                );
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            });            
+            // Tự động cuộn đến tin nhắn chatbot mới
+            webView.getEngine().getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+                if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                    // Đợi một chút để nội dung được render hoàn toàn
+                    Platform.runLater(() -> {
+                        // Cuộn xuống tin nhắn mới nhất
+                        scrollPane.setVvalue(1.0);
+                    });
+                }
             });
 
 //            Label responseLabel = new Label(html);

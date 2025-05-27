@@ -7,6 +7,10 @@ public class PageManager {
     public ChatbotPage getChatbotPage() {
         return new ChatbotPage();
     }
+    
+    public NewsPage getNewsPage() {
+        return new NewsPage();
+    }
 
     //    public OwnedStocksPage getOwnedStocksPage() {
 //        return new OwnedStocksPage();
