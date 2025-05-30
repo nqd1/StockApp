@@ -28,6 +28,12 @@ public class NewsPage extends VBox {
     private Button searchButton;
     private Button refreshButton;
     
+    // Biến để theo dõi số tin tức đã hiển thị và danh sách toàn bộ tin tức
+    private List<News> currentNewsList;
+    private final int INITIAL_NEWS_COUNT = 10;
+    private final int LOAD_MORE_COUNT = 10;
+    private int displayedNewsCount = 0;
+    
     public NewsPage() {
         this.setPadding(new Insets(15));
         this.setSpacing(15);
@@ -100,7 +106,8 @@ public class NewsPage extends VBox {
         
         return searchBar;
     }
-      private void performSearch() {
+
+    private void performSearch() {
         String keyword = searchField.getText().trim();
         String searchType = searchTypeComboBox.getValue();
         
@@ -132,9 +139,15 @@ public class NewsPage extends VBox {
             }
             
             noResultsLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: gray;");
-            newsContainer.getChildren().add(noResultsLabel);
-        } else {
-            displayNews(searchResults);
+            newsContainer.getChildren().add(noResultsLabel);        } else {
+            currentNewsList = searchResults; // Lưu kết quả tìm kiếm
+            displayedNewsCount = Math.min(INITIAL_NEWS_COUNT, currentNewsList.size());
+            displayNews(currentNewsList.subList(0, displayedNewsCount));
+            
+            // Thêm nút "Tải thêm" nếu còn tin tức để tải
+            if (displayedNewsCount < currentNewsList.size()) {
+                addLoadMoreButton();
+            }
         }
     }
     
@@ -178,7 +191,14 @@ public class NewsPage extends VBox {
             noNewsLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: gray;");
             newsContainer.getChildren().add(noNewsLabel);
         } else {
-            displayNews(allNews);
+            currentNewsList = allNews; // Lưu danh sách tin tức hiện tại
+            displayedNewsCount = Math.min(INITIAL_NEWS_COUNT, currentNewsList.size()); // Số tin tức sẽ hiển thị ban đầu
+            displayNews(currentNewsList.subList(0, displayedNewsCount));
+            
+            // Thêm nút "Tải thêm" nếu còn tin tức để tải
+            if (displayedNewsCount < currentNewsList.size()) {
+                addLoadMoreButton();
+            }
         }
     }
     
@@ -201,12 +221,11 @@ public class NewsPage extends VBox {
         // Đặt style mặc định cho hyperlink và đảm bảo nó luôn có màu xanh
         titleLink.setStyle("-fx-text-fill: #1a0dab;");
         titleLink.setVisited(false); // Đảm bảo luôn ở trạng thái chưa truy cập
+          // Thêm CSS khi hover
+        titleLink.setOnMouseEntered(_ -> titleLink.setStyle("-fx-text-fill: #1a0dab; -fx-underline: true;"));
+        titleLink.setOnMouseExited(_ -> titleLink.setStyle("-fx-text-fill: #1a0dab; -fx-underline: false;"));
         
-        // Thêm CSS khi hover
-        titleLink.setOnMouseEntered(e -> titleLink.setStyle("-fx-text-fill: #1a0dab; -fx-underline: true;"));
-        titleLink.setOnMouseExited(e -> titleLink.setStyle("-fx-text-fill: #1a0dab; -fx-underline: false;"));
-        
-        titleLink.setOnAction(event -> {
+        titleLink.setOnAction(_ -> {
             openNewsUrl(news.getUrl());
             // Đặt lại style sau khi click để đảm bảo màu sắc không thay đổi
             titleLink.setStyle("-fx-text-fill: #1a0dab;");
@@ -233,6 +252,7 @@ public class NewsPage extends VBox {
         sentimentLabel.setStyle(getSentimentStyle(news.getSentimentLabel()));
         
         Label scoreLabel = new Label("Điểm: " + news.getFormattedSentimentScore());
+        scoreLabel.setStyle("-fx-text-fill: black;");
         
         sentimentBox.getChildren().addAll(sentimentLabel, scoreLabel);
         
@@ -242,35 +262,35 @@ public class NewsPage extends VBox {
         
         List<News.Topic> topTopics = news.getMostRelevantTopics(3);
         for (News.Topic topic : topTopics) {
-            Label topicLabel = new Label(topic.getTopic());
-            topicLabel.setPadding(new Insets(2, 5, 2, 5));
-            topicLabel.setStyle("-fx-background-color: #eee; -fx-background-radius: 3px;");
-            topicsPane.getChildren().add(topicLabel);
-        }
+    Label topicLabel = new Label(topic.getTopic());
+    topicLabel.setPadding(new Insets(2, 5, 2, 5));
+    topicLabel.setStyle("-fx-background-color: #d0eaff; -fx-background-radius: 3px; -fx-text-fill: #003366;");
+    topicsPane.getChildren().add(topicLabel);
+}
         
         // Thêm các phần tử vào card
         card.getChildren().addAll(titleLink, infoBox, summaryLabel, sentimentBox, topicsPane);
-        
-        // Thêm hiệu ứng hover
-        card.setOnMouseEntered(event -> {
+          // Thêm hiệu ứng hover
+        card.setOnMouseEntered(_ -> {
             card.setStyle("-fx-background-color: #f9f9f9; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-border-color: #ddd;");
         });
-        card.setOnMouseExited(event -> {
+        card.setOnMouseExited(_ -> {
             card.setStyle("-fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-border-color: #ddd;");
         });
         
         return card;
     }
     
+
     private String getSentimentStyle(String sentiment) {
-        if ("Bullish".equalsIgnoreCase(sentiment)) {
-            return "-fx-text-fill: green; -fx-font-weight: bold;";
-        } else if ("Bearish".equalsIgnoreCase(sentiment)) {
-            return "-fx-text-fill: red; -fx-font-weight: bold;";
-        } else {
-            return "-fx-text-fill: gray; -fx-font-weight: bold;";
-        }
+    if (sentiment != null && sentiment.toLowerCase().contains("bullish")) {
+        return "-fx-text-fill: green; -fx-font-weight: bold;";
+    } else if (sentiment != null && sentiment.toLowerCase().contains("bearish")) {
+        return "-fx-text-fill: red; -fx-font-weight: bold;";
+    } else {
+        return "-fx-text-fill: gray; -fx-font-weight: bold;";
     }
+}
     
     private void openNewsUrl(String url) {
         try {
@@ -294,6 +314,35 @@ public class NewsPage extends VBox {
             alert.setHeaderText("Không thể mở URL");
             alert.setContentText("Vui lòng kiểm tra kết nối internet hoặc sao chép URL để mở trong trình duyệt của bạn.");
             alert.showAndWait();
+        }
+    }
+    
+    private void addLoadMoreButton() {
+        Button loadMoreButton = new Button("Tải thêm tin tức");
+        loadMoreButton.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 14px;");        loadMoreButton.setOnAction(_ -> {
+            loadMoreNews();
+        });
+        
+        newsContainer.getChildren().add(loadMoreButton);
+    }
+      private void loadMoreNews() {
+        if (currentNewsList == null || displayedNewsCount >= currentNewsList.size()) {
+            return;
+        }
+        
+        // Xóa nút "Tải thêm" hiện tại trước khi thêm tin tức mới
+        newsContainer.getChildren().removeIf(node -> node instanceof Button);
+        
+        // Tính toán số tin tức sẽ được tải thêm
+        int nextLoadCount = Math.min(LOAD_MORE_COUNT, currentNewsList.size() - displayedNewsCount);
+        
+        // Hiển thị các tin tức tiếp theo
+        displayNews(currentNewsList.subList(displayedNewsCount, displayedNewsCount + nextLoadCount));
+        displayedNewsCount += nextLoadCount;
+        
+        // Thêm lại nút "Tải thêm" ở cuối nếu còn tin tức để tải
+        if (displayedNewsCount < currentNewsList.size()) {
+            addLoadMoreButton();
         }
     }
 }
