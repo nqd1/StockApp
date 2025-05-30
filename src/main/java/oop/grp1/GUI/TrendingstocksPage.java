@@ -690,26 +690,6 @@ public class TrendingstocksPage extends VBox {
         teamBox.getChildren().addAll(teamTitle, facebookBox, phoneBox, addressBox);
         footerGrid.add(teamBox, 4, 0);
         
-        // App Store và Google Play buttons
-        HBox appStoreBox = new HBox(15);
-        appStoreBox.setAlignment(Pos.CENTER);
-        appStoreBox.setPadding(new Insets(15, 0, 10, 0));
-        
-        // App Store button
-        Button appStoreBtn = new Button("Download on App Store");
-        FontIcon appleIcon = new FontIcon(FontAwesomeSolid.STAR);
-        appleIcon.setIconColor(Color.WHITE);
-        appStoreBtn.setGraphic(appleIcon);
-        appStoreBtn.setStyle("-fx-background-color: #000; -fx-text-fill: white; -fx-padding: 8 15; -fx-background-radius: 8;");
-          // Google Play button
-        Button googlePlayBtn = new Button("Get it on Google Play");
-        FontIcon androidIcon = new FontIcon(FontAwesomeSolid.MOBILE_ALT);
-        androidIcon.setIconColor(Color.WHITE);
-        googlePlayBtn.setGraphic(androidIcon);
-        googlePlayBtn.setStyle("-fx-background-color: #414141; -fx-text-fill: white; -fx-padding: 8 15; -fx-background-radius: 8;");
-        
-        appStoreBox.getChildren().addAll(appStoreBtn, googlePlayBtn);
-        
         // Bottom row: Copyright and version
         HBox bottomRow = new HBox();
         bottomRow.setAlignment(Pos.CENTER);
@@ -737,7 +717,7 @@ public class TrendingstocksPage extends VBox {
         
         bottomRow.getChildren().addAll(copyright, spacer, loveBox);
         
-        footer.getChildren().addAll(separator, headerBox, footerGrid, appStoreBox, bottomRow);
+        footer.getChildren().addAll(separator, headerBox, footerGrid, bottomRow);
         return footer;
     }
 
