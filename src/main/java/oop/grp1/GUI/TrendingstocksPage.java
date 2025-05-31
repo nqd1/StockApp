@@ -157,8 +157,10 @@ public class TrendingstocksPage extends VBox {
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
         // Đặt độ cao cố định để hiển thị chính xác 10 hàng
-        table.setFixedCellSize(25);
-        table.setPrefHeight(270); // Chiều cao cho 10 hàng + header + padding
+        table.setFixedCellSize(27); // Tăng từ 25 lên 27
+        table.setPrefHeight(27 * 10 + 30); // 27 * 10 hàng + 30 cho header
+        table.setMinHeight(27 * 10 + 30);
+        table.setMaxHeight(27 * 10 + 30);
         
         // Tắt thanh cuộn và thêm style cho bảng
         table.setStyle("-fx-background-color: white; -fx-border-radius: 5px; -fx-border-color: #ddd;");
@@ -184,7 +186,9 @@ public class TrendingstocksPage extends VBox {
             });
             
             // Thêm zebra striping
-            row.setPrefHeight(25);
+            row.setPrefHeight(27); // Đồng bộ với fixedCellSize
+            row.setMinHeight(27);
+            row.setMaxHeight(27);
             row.itemProperty().addListener((obs, oldItem, newItem) -> {
                 if (row.getIndex() % 2 == 0) {
                     row.setStyle("-fx-background-color: white;");
@@ -286,8 +290,10 @@ public class TrendingstocksPage extends VBox {
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
         // Đặt độ cao cố định để hiển thị chính xác 10 hàng
-        table.setFixedCellSize(25);
-        table.setPrefHeight(270); // Chiều cao cho 10 hàng + header + padding
+        table.setFixedCellSize(27); // Tăng từ 25 lên 27
+        table.setPrefHeight(27 * 10 + 30); // 27 * 10 hàng + 30 cho header
+        table.setMinHeight(27 * 10 + 30);
+        table.setMaxHeight(27 * 10 + 30);
         
         // Tắt thanh cuộn
         table.setStyle("-fx-background-color: white; -fx-border-radius: 5px; -fx-border-color: #ddd;");
@@ -314,7 +320,9 @@ public class TrendingstocksPage extends VBox {
             });
             
             // Thêm zebra striping
-            row.setPrefHeight(25);
+            row.setPrefHeight(27); // Đồng bộ với fixedCellSize
+            row.setMinHeight(27);
+            row.setMaxHeight(27);
             row.itemProperty().addListener((obs, oldItem, newItem) -> {
                 if (row.getIndex() % 2 == 0) {
                     row.setStyle("-fx-background-color: white;");
@@ -356,11 +364,21 @@ public class TrendingstocksPage extends VBox {
             }
         }
         
-        // Thiết lập đúng 10 hàng trong bảng, không có hàng trống
+        // Đảm bảo có đúng 10 hàng - thêm dữ liệu trống nếu cần
+        while (topTrendingData.size() < 10) {
+            topTrendingData.add(new StockData("-", 0.0));
+        }
+        
+        // Cắt bớt nếu có quá 10 hàng
+        if (topTrendingData.size() > 10) {
+            topTrendingData = topTrendingData.subList(0, 10);
+        }
+        
+        // Thiết lập đúng 10 hàng trong bảng, không có hàng trống        
         topTrendingTable.setFixedCellSize(25); // Chiều cao cố định cho mỗi hàng
-        topTrendingTable.setPrefHeight(270); // Chiều cao cho 10 hàng + header + padding
+        topTrendingTable.setPrefHeight(27 * 10 + 30); // Chiều cao cho 10 hàng + header + padding
         topTrendingTable.getItems().clear();
-        topTrendingTable.getItems().addAll(topTrendingData.subList(0, Math.min(10, topTrendingData.size())));
+        topTrendingTable.getItems().addAll(topTrendingData);
     }      
     
     private void loadTopGiamGiaData() {
@@ -368,19 +386,26 @@ public class TrendingstocksPage extends VBox {
             .map(Stock::getLatestStock)
             .filter(stock -> stock != null && stock.isBearish())
             .sorted((a, b) -> Double.compare(a.getPercentageChange(), b.getPercentageChange())) // giảm giá nhiều nhất lên trên
-            .limit(10)
+            .limit(10) // Đảm bảo chỉ lấy tối đa 10
             .collect(Collectors.toList());
 
         List<StockData> topGiamGiaData = allBearishStocks.stream()
             .map(stock -> new StockData(stock.getTicker(), stock.getClose()))
             .collect(Collectors.toList());
 
-        // Thêm dữ liệu giả nếu không đủ 10 kết quả
+        // Đảm bảo có đúng 10 hàng - thêm dữ liệu trống nếu cần
         while (topGiamGiaData.size() < 10) {
             topGiamGiaData.add(new StockData("-", 0.0));
         }
+        
+        // Cắt bớt nếu có quá 10 hàng
+        if (topGiamGiaData.size() > 10) {
+            topGiamGiaData = topGiamGiaData.subList(0, 10);
+        }
 
-        // Thiết lập đúng 10 hàng trong bảng
+        // Thiết lập đúng 10 hàng trong bảng, không có hàng trống        
+        topGiamGiaTable.setFixedCellSize(25); // Chiều cao cố định cho mỗi hàng
+        topGiamGiaTable.setPrefHeight(27 * 10 + 30); // Chiều cao cho 10 hàng + header + padding
         topGiamGiaTable.getItems().clear();
         topGiamGiaTable.getItems().addAll(topGiamGiaData);
     }    
@@ -399,7 +424,7 @@ public class TrendingstocksPage extends VBox {
 
         // Thiết lập đúng 10 hàng trong bảng, không có hàng trống        
         topThayDoiTable.setFixedCellSize(25); // Chiều cao cố định cho mỗi hàng
-        topThayDoiTable.setPrefHeight(270); // Chiều cao cho 10 hàng + header + padding
+        topThayDoiTable.setPrefHeight(27 * 10 + 30); // Chiều cao cho 10 hàng + header + padding
         topThayDoiTable.getItems().clear();
         
         // Thêm dữ liệu giả nếu không đủ 10 kết quả

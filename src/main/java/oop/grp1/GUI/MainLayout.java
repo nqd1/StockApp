@@ -15,7 +15,9 @@ public class MainLayout extends BorderPane {
 
         // Set Initial Content
         setContent(pageManager.getDashboardPage());
-    }    private void handleNavigation(String page) {
+    }    
+    
+    private void handleNavigation(String page) {
         switch (page) {
             case "Dashboard":
                 setContent(pageManager.getDashboardPage());
@@ -26,9 +28,6 @@ public class MainLayout extends BorderPane {
             case "News":
                 setContent(pageManager.getNewsPage());
                 break;
-//            case "UserDetail":
-//                setContent(pageManager.getUserDetail());
-//                break;
             default:
                 System.out.println("Unknown page: " + page);
         }

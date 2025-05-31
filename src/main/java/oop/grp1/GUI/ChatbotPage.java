@@ -17,7 +17,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.web.WebView;
-import javafx.scene.layout.Region;
 
 
 public class ChatbotPage extends VBox {
@@ -79,6 +78,76 @@ public class ChatbotPage extends VBox {
         shadow.setRadius(10);
         this.setEffect(shadow);
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
+        
+        // Thêm tin nhắn chào mừng và giới thiệu
+        addWelcomeMessage();
+    }
+
+    private void addWelcomeMessage() {
+        String welcomeMessage = """
+            # Chào mừng bạn đến với Stock Market Assistant!
+
+            **Tôi là trợ lý AI chuyên về thị trường chứng khoán.** Tôi có thể giúp gì cho bạn.
+            """;
+                
+        // Tạo WebView để hiển thị tin nhắn markdown
+        String html = MarkdownUtils.convertToHtml(welcomeMessage);
+        
+        WebView webView = new WebView();
+        webView.prefWidthProperty().bind(messageContainer.widthProperty().subtract(30));
+        webView.setMinHeight(50);
+        webView.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        webView.setMaxHeight(Double.MAX_VALUE);
+          String customCSS = "<style>" +
+                           "body { width: 95%; margin: 0; padding: 20px; word-wrap: break-word; overflow: hidden; " +
+                           "font-family: 'Segoe UI', 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', Arial, sans-serif; " +
+                           "background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); " +
+                           "color: #2c3e50; border-radius: 12px; border: 2px solid #dee2e6; " +
+                           "box-shadow: 0 4px 12px rgba(0,0,0,0.1); }" +
+                           "h1 { color: #2c3e50; margin-top: 0; font-size: 1.5em; }" +
+                           "strong { color: #495057; font-weight: 600; }" +
+                           "ul, li { color: #495057; margin: 8px 0; }" +
+                           "hr { border: none; border-top: 2px solid #dee2e6; margin: 20px 0; }" +
+                           "em { color: #6c757d; font-style: italic; }" +
+                           "p { margin: 10px 0; line-height: 1.5; }" +
+                           "pre { white-space: pre-wrap; background: #f8f9fa; padding: 10px; border-radius: 5px; }" +
+                           "code { white-space: pre-wrap; background: #f8f9fa; padding: 2px 6px; border-radius: 4px; color: #e83e8c; }" +
+                           "html, body { height: auto; overflow: visible; }" +
+                           "</style>";
+                           
+        webView.getEngine().loadContent(customCSS + "<div id='content'>" + html + "</div>");
+        
+        HBox messageBox = new HBox(webView);
+        messageBox.setPadding(new Insets(5));
+        messageBox.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
+        HBox.setHgrow(webView, Priority.ALWAYS);
+        messageContainer.getChildren().add(messageBox);
+        
+        // Tự động điều chỉnh chiều cao của WebView
+        webView.getEngine().getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                Platform.runLater(() -> {
+                    try {
+                        Object result = webView.getEngine().executeScript(
+                            "Math.max(document.body.scrollHeight, document.documentElement.scrollHeight, " +
+                            "document.body.offsetHeight, document.documentElement.offsetHeight, " +
+                            "document.body.clientHeight, document.documentElement.clientHeight);"
+                        );
+                        if (result instanceof Number) {
+                            double height = ((Number) result).doubleValue();
+                            webView.setPrefHeight(height + 40);
+                            
+                            webView.getEngine().executeScript(
+                                "document.body.style.overflow='hidden';" +
+                                "document.documentElement.style.overflow='hidden';"
+                            );
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        });
     }
 
     private void handleSendMessage() {
@@ -162,12 +231,6 @@ public class ChatbotPage extends VBox {
                 }
             });
 
-//            Label responseLabel = new Label(html);
-//            responseLabel.setWrapText(true); // Ensures the content fits
-//            responseLabel.setStyle("-fx-background-color: #eee; -fx-border-radius: 5px;");
-//            messageContainer.getChildren().add(responseLabel);
-
-
         }
     }
 
@@ -207,4 +270,5 @@ public class ChatbotPage extends VBox {
 
         messageContainer.getChildren().add(messageBox);
     }
+
 }
