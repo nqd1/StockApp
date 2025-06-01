@@ -2,12 +2,15 @@ oop\grp1\Control\JsonBeautifier.class
 oop\grp1\GUI\DashboardPage.class
 oop\grp1\Control\DBManager\NewsManager.class
 oop\grp1\App.class
+oop\grp1\Control\DataFetcher\Chatbot.class
+oop\grp1\Control\DBManager\ChatbotManager.class
 oop\grp1\Control\DataFetcher\DFAbstract.class
 oop\grp1\Control\DBManager\StockManager.class
 oop\grp1\Testing.class
 oop\grp1\GUI\ChatbotPage.class
 oop\grp1\GUI\Main.class
 oop\grp1\GUI\PageManager.class
+oop\grp1\Control\Model\ChatResponse.class
 oop\grp1\GUI\MainLayout.class
 org\example\Main.class
 oop\grp1\TestingAlphaVantage.class
