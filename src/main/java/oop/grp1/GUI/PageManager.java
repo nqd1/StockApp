@@ -1,80 +1,76 @@
 package oop.grp1.GUI;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import oop.grp1.GUI.StockDetail.StockWithInterest;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PageManager {
-    private final DashboardPage dashboardPage;
-    private final ChatbotPage chatbotPage;
-    private final WatchList watchListPage;
-    private final StockDetail stockDetailPage;
-    private final ViewStockDetail viewStockDetailPage;
-    private final ObservableList<StockWithInterest> stockData;
+    private static PageManager instance;
+    private final Map<String, Node> pages;
+    private StackPane contentArea; // Changed from Region to StackPane
 
-    public PageManager() {
-        dashboardPage = new DashboardPage();
-        chatbotPage = new ChatbotPage();
-        watchListPage = new WatchList();
-        stockData = FXCollections.observableArrayList();
-
-        stockDetailPage = new StockDetail();
-        stockData.addAll(stockDetailPage.getStockData());
-        stockDetailPage.getStockTable().setItems(stockData);
-
-        viewStockDetailPage = new ViewStockDetail();
+    private PageManager() {
+        pages = new HashMap<>();
     }
 
-    public DashboardPage getDashboardPage() {
-        return dashboardPage;
-    }
-
-    public ChatbotPage getChatbotPage() {
-        return chatbotPage;
-    }
-
-    public WatchList getWatchListPage() {
-        return watchListPage;
-    }
-
-    public StockDetail getStockDetail() {
-        return stockDetailPage;
-    }
-
-    public StockDetail getStockDetailPage(Stock stock) {
-        stockDetailPage.updateStock(stock);
-        if (stock != null) {
-            StockWithInterest newStock = stockDetailPage.getStockTable().getItems().get(0);
-            for (StockWithInterest existingStock : stockData) {
-                if (existingStock.getStockCode().equals(newStock.getStockCode())) {
-                    newStock.setInterested(existingStock.isInterested());
-                    break;
-                }
-            }
+    public static PageManager getInstance() {
+        if (instance == null) {
+            instance = new PageManager();
         }
-        return stockDetailPage;
+        return instance;
     }
 
-    public StockDetail getStockDetailPageByTicker(String ticker) {
-        stockDetailPage.updateStockByTicker(ticker);
-        if (!stockDetailPage.getStockData().isEmpty()) {
-            StockWithInterest newStock = stockDetailPage.getStockTable().getItems().get(0);
-            for (StockWithInterest existingStock : stockData) {
-                if (existingStock.getStockCode().equals(newStock.getStockCode())) {
-                    newStock.setInterested(existingStock.isInterested());
-                    break;
-                }
-            }
+    public void setContentArea(StackPane contentArea) { // Updated parameter type
+        this.contentArea = contentArea;
+    }
+
+    public void showPage(String pageName) {
+        if (contentArea == null) {
+            System.err.println("Content area not set in PageManager");
+            return;
         }
-        return stockDetailPage;
+
+        Node page = pages.computeIfAbsent(pageName, this::createPage);
+        if (page != null) {
+            contentArea.getChildren().setAll(page); // Now works with StackPane
+        } else {
+            System.err.println("Page not found: " + pageName);
+        }
     }
 
-    public ViewStockDetail getViewStockDetailPage() {
-        return viewStockDetailPage;
+    private Node createPage(String pageName) {
+        switch (pageName) {
+            case "TrendingstocksPage":
+                return new TrendingstocksPage();
+            case "NewsPage":
+                return new NewsPage();
+            case "StockDetail":
+                return new StockDetail();
+            case "ViewStockDetail":
+                return new ViewStockDetail();
+            case "WatchList":
+                return new WatchList();
+            case "ChatbotPage":
+                return new ChatbotPage();
+            default:
+                System.err.println("Unknown page: " + pageName);
+                return null;
+        }
     }
 
-    public ViewStockDetail getViewStockDetailPageByTicker(String ticker) {
-        viewStockDetailPage.updateChartByTicker(ticker);
-        return viewStockDetailPage;
+    public void updateStockDetail(String ticker) {
+        StockDetail stockDetail = (StockDetail) pages.get("StockDetail");
+        if (stockDetail != null) {
+            stockDetail.updateStockByTicker(ticker);
+        }
+    }
+
+    public void updateViewStockDetail(String ticker) {
+        ViewStockDetail viewStockDetail = (ViewStockDetail) pages.get("ViewStockDetail");
+        if (viewStockDetail != null) {
+            viewStockDetail.updateChartByTicker(ticker);
+        }
     }
 }

@@ -1,13 +1,9 @@
 package oop.grp1.GUI;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -22,8 +18,8 @@ public class ViewStockDetail extends VBox {
     private TextField searchField;
     private Button searchButton;
     private final Label stockInfoLabel;
-    private final LineChart<Number, Number> priceChart;
-    private final LineChart<Number, Number> volumeChart;
+    private final AreaChart<Number, Number> priceChart;
+    private final BarChart<String, Number> volumeChart;
     private final VBox chartContainer;
     private final Label noDataLabel;
     private final ProgressIndicator loadingIndicator;
@@ -37,36 +33,29 @@ public class ViewStockDetail extends VBox {
         this.setStyle("-fx-background-color: #ffffff; -fx-border-color: #dcdcdc; -fx-border-radius: 10px;");
         this.setEffect(new javafx.scene.effect.DropShadow(10, Color.GRAY));
 
-        // Title
         Label titleLabel = new Label("Chi Tiết Biến Động Cổ Phiếu");
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         titleLabel.setStyle("-fx-text-fill: #2c3e50;");
 
-        // Search section
         HBox searchBox = createSearchSection();
 
-        // Stock info section
         stockInfoLabel = new Label("Nhập mã cổ phiếu để xem thông tin chi tiết");
         stockInfoLabel.setFont(Font.font("Arial", 14));
         stockInfoLabel.setStyle("-fx-text-fill: #7f8c8d; -fx-padding: 10px;");
         stockInfoLabel.setWrapText(true);
 
-        // Loading indicator
         loadingIndicator = new ProgressIndicator();
         loadingIndicator.setVisible(false);
         loadingIndicator.setPrefSize(50, 50);
 
-        // No data label
         noDataLabel = new Label("Không tìm thấy dữ liệu cho mã cổ phiếu này");
         noDataLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
         noDataLabel.setStyle("-fx-text-fill: #e74c3c;");
         noDataLabel.setVisible(false);
 
-        // Statistics panel
         statisticsPanel = createStatisticsPanel();
         statisticsPanel.setVisible(false);
 
-        // Charts
         priceChart = createPriceChart();
         volumeChart = createVolumeChart();
 
@@ -74,7 +63,6 @@ public class ViewStockDetail extends VBox {
         chartContainer.getChildren().addAll(priceChart, volumeChart);
         chartContainer.setVisible(false);
 
-        // Add all components
         this.getChildren().addAll(
                 titleLabel,
                 searchBox,
@@ -101,7 +89,6 @@ public class ViewStockDetail extends VBox {
         searchButton.setOnMouseEntered(e -> searchButton.setStyle("-fx-background-color: #2980b9; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 8px 16px;"));
         searchButton.setOnMouseExited(e -> searchButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 8px 16px;"));
 
-        // Event handlers
         searchButton.setOnAction(e -> searchStock());
         searchField.setOnAction(e -> searchStock());
 
@@ -118,30 +105,32 @@ public class ViewStockDetail extends VBox {
         return panel;
     }
 
-    private LineChart<Number, Number> createPriceChart() {
+    private AreaChart<Number, Number> createPriceChart() {
         NumberAxis xAxis = new NumberAxis();
         NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Thời gian (Điểm dữ liệu)");
         yAxis.setLabel("Giá ($)");
 
-        LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
+        AreaChart<Number, Number> chart = new AreaChart<>(xAxis, yAxis);
         chart.setTitle("Biểu Đồ Biến Động Giá");
-        chart.setPrefHeight(300);
+        chart.setPrefHeight(500);
         chart.setStyle("-fx-background-color: #ffffff;");
 
         return chart;
     }
 
-    private LineChart<Number, Number> createVolumeChart() {
-        NumberAxis xAxis = new NumberAxis();
+    private BarChart<String, Number> createVolumeChart() {
+        CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Thời gian (Điểm dữ liệu)");
         yAxis.setLabel("Khối lượng");
 
-        LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
+        BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
         chart.setTitle("Biểu Đồ Khối Lượng Giao Dịch");
         chart.setPrefHeight(200);
         chart.setStyle("-fx-background-color: #ffffff;");
+        chart.setCategoryGap(5);
+        chart.setBarGap(2);
 
         return chart;
     }
@@ -157,28 +146,21 @@ public class ViewStockDetail extends VBox {
     }
 
     public void updateChartByTicker(String ticker) {
-        if (ticker == null || ticker.trim().isEmpty()) {
-            return;
-        }
+        if (ticker == null || ticker.trim().isEmpty()) return;
 
         currentTicker = ticker.trim().toUpperCase();
         searchField.setText(currentTicker);
 
-        // Show loading indicator
         showLoading(true);
         hideComponents();
 
-        // Create background task
-        Task<Void> task = new Task<Void>() {
+        Task<Void> task = new Task<>() {
             private List<Stock> stockData;
             private Map<String, Object> statistics;
 
             @Override
             protected Void call() throws Exception {
-                // Simulate some processing time
-                Thread.sleep(500);
-
-                // Fetch data
+                Thread.sleep(500); // simulate loading
                 stockData = Stock.getStockData(currentTicker);
                 if (!stockData.isEmpty()) {
                     statistics = Stock.getSummaryStatistics(currentTicker);
@@ -218,18 +200,11 @@ public class ViewStockDetail extends VBox {
             return;
         }
 
-        // Update stock info
-        Stock latestStock = stockData.get(0);
-        updateStockInfo(latestStock);
-
-        // Update statistics panel
+        updateStockInfo(stockData.get(0));
         updateStatisticsPanel(statistics);
-
-        // Update charts
         updatePriceChart(stockData);
         updateVolumeChart(stockData);
 
-        // Show components
         stockInfoLabel.setVisible(true);
         statisticsPanel.setVisible(true);
         chartContainer.setVisible(true);
@@ -244,8 +219,8 @@ public class ViewStockDetail extends VBox {
         info.append("⬆️ Giá Cao Nhất: ").append(Stock.formatPrice(stock.getHigh())).append("\n");
         info.append("⬇️ Giá Thấp Nhất: ").append(Stock.formatPrice(stock.getLow())).append("\n");
         info.append("📊 Khối Lượng: ").append(Stock.formatVolume(stock.getVolume())).append("\n");
-        info.append("📊 Thay Đổi: ").append(stock.getFormattedPercentageChange());
-        info.append(" (").append(stock.getFormattedPriceChange()).append(")\n");
+        info.append("📊 Thay Đổi: ").append(stock.getFormattedPercentageChange())
+                .append(" (").append(stock.getFormattedPriceChange()).append(")\n");
         info.append("🎯 Xu Hướng: ").append(stock.getMarketSentiment()).append("\n");
         info.append("⚡ Độ Biến Động: ").append(String.format("%.2f%%", stock.getVolatility())).append("\n");
         info.append("🕒 Cập Nhật: ").append(stock.getFormattedTimestamp());
@@ -266,19 +241,12 @@ public class ViewStockDetail extends VBox {
         statsGrid.setVgap(8);
         statsGrid.setPadding(new Insets(10, 0, 0, 0));
 
-        // Row 1
         addStatistic(statsGrid, 0, 0, "Tổng Điểm Dữ Liệu:", statistics.get("totalDataPoints").toString());
         addStatistic(statsGrid, 1, 0, "Giá Trung Bình:", Stock.formatPrice((Double) statistics.get("averagePrice")));
-
-        // Row 2
         addStatistic(statsGrid, 0, 1, "Giá Cao Nhất:", Stock.formatPrice((Double) statistics.get("highestPrice")));
         addStatistic(statsGrid, 1, 1, "Giá Thấp Nhất:", Stock.formatPrice((Double) statistics.get("lowestPrice")));
-
-        // Row 3
         addStatistic(statsGrid, 0, 2, "KL Trung Bình:", Stock.formatVolume((Integer) statistics.get("averageVolume")));
         addStatistic(statsGrid, 1, 2, "Phiên Tăng:", statistics.get("bullishPeriods").toString());
-
-        // Row 4
         addStatistic(statsGrid, 0, 3, "Phiên Giảm:", statistics.get("bearishPeriods").toString());
 
         statisticsPanel.getChildren().addAll(statsTitle, statsGrid);
@@ -314,11 +282,9 @@ public class ViewStockDetail extends VBox {
         XYChart.Series<Number, Number> lowSeries = new XYChart.Series<>();
         lowSeries.setName("Giá Thấp Nhất");
 
-        // Reverse the order to show chronological progression
         for (int i = stockData.size() - 1; i >= 0; i--) {
             Stock stock = stockData.get(i);
             int timePoint = stockData.size() - i;
-
             openSeries.getData().add(new XYChart.Data<>(timePoint, stock.getOpen()));
             closeSeries.getData().add(new XYChart.Data<>(timePoint, stock.getClose()));
             highSeries.getData().add(new XYChart.Data<>(timePoint, stock.getHigh()));
@@ -332,14 +298,13 @@ public class ViewStockDetail extends VBox {
     private void updateVolumeChart(List<Stock> stockData) {
         volumeChart.getData().clear();
 
-        XYChart.Series<Number, Number> volumeSeries = new XYChart.Series<>();
+        XYChart.Series<String, Number> volumeSeries = new XYChart.Series<>();
         volumeSeries.setName("Khối Lượng Giao Dịch");
 
-        // Reverse the order to show chronological progression
         for (int i = stockData.size() - 1; i >= 0; i--) {
             Stock stock = stockData.get(i);
             int timePoint = stockData.size() - i;
-            volumeSeries.getData().add(new XYChart.Data<>(timePoint, stock.getVolume()));
+            volumeSeries.getData().add(new XYChart.Data<>(String.valueOf(timePoint), stock.getVolume()));
         }
 
         volumeChart.getData().add(volumeSeries);
@@ -375,7 +340,6 @@ public class ViewStockDetail extends VBox {
         alert.showAndWait();
     }
 
-    // Getter methods for integration
     public String getCurrentTicker() {
         return currentTicker;
     }
