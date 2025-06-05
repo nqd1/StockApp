@@ -17,6 +17,10 @@ import java.util.stream.Collectors;
 
 import oop.grp1.Control.DBManager.StockManager;
 
+
+
+
+
 /**
  * Complete Stock class with data model, database operations, and analysis
  * Designed for GUI applications - no console output

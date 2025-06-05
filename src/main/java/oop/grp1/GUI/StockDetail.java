@@ -17,7 +17,7 @@ public class StockDetail extends VBox {
     private final TableView<StockWithInterest> stockTable;
     private final ObservableList<StockWithInterest> stockData;
 
-    // Inner class to support the "Quan tâm" column
+
     public static class StockWithInterest extends Stock {
         private final BooleanProperty interested;
 
@@ -48,7 +48,7 @@ public class StockDetail extends VBox {
         }
     }
 
-    // Default constructor: Load all stocks from the database
+
     public StockDetail() {
         stockTable = new TableView<>();
         stockData = FXCollections.observableArrayList();
@@ -71,7 +71,7 @@ public class StockDetail extends VBox {
         setupTable();
     }
 
-    // Constructor with specific ticker
+
     public StockDetail(String ticker) {
         stockTable = new TableView<>();
         stockData = FXCollections.observableArrayList();
@@ -91,7 +91,7 @@ public class StockDetail extends VBox {
         setupTable();
     }
 
-    // Constructor with Stock object
+
     public StockDetail(Stock stock) {
         stockTable = new TableView<>();
         stockData = FXCollections.observableArrayList();
@@ -110,7 +110,7 @@ public class StockDetail extends VBox {
         setupTable();
     }
 
-    // Set up the table display
+
     private void setupTable() {
         TableColumn<StockWithInterest, String> ticColumn = new TableColumn<>("Mã CP");
         ticColumn.setCellValueFactory(new PropertyValueFactory<>("ticker"));
