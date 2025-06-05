@@ -7,8 +7,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="oop_project_chungkhoan" />
+<<<<<<< HEAD
         <module name="stockApp" />
+=======
+>>>>>>> GUI2
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="stockApp" target="23" />
+    </bytecodeTargetLevel>
   </component>
 </project>

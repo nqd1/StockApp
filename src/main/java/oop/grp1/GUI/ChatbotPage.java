@@ -1,4 +1,12 @@
 package oop.grp1.GUI;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import oop.grp1.Control.DataFetcher.Chatbot;
+import oop.grp1.Control.Model.ChatResponse;
+
+import com.google.gson.Gson;
+
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.NodeOrientation;
@@ -9,6 +17,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.web.WebView;
+import javafx.scene.layout.Region;
 
 
 public class ChatbotPage extends VBox {
@@ -16,6 +25,9 @@ public class ChatbotPage extends VBox {
     private final TextField inputField;
     private final Button sendButton;
     private final ScrollPane scrollPane;
+
+    Chatbot chatbot = new Chatbot();
+    Gson gson = new Gson();
 
     public ChatbotPage() {
         // Khung chứa tin nhắn (VBox)
@@ -76,34 +88,78 @@ public class ChatbotPage extends VBox {
             addMessage(userMessage, true);
             inputField.clear();
 
-            // Phản hồi từ chatbot
-//            String botResponse = getChatbotResponse(userMessage);
-//            addMessage(botResponse, false);
+            ChatResponse response = chatbot.processQuery(userMessage);            
+            String jsonResponse = gson.toJson(response);
+            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+            String responseContent = jsonObject.get("responseContent").getAsString();
 
-
-            String markdown = "# Tiêu đề\n\nĐây là đoạn **markdown** với *định dạng*.\n" +
-                    "# Tiêu đề\n\nĐây là đoạn **markdown** với *định dạng*.ejfgaenwfkaewjfaewfaew hihihihihi con cho duc beo lol dcm me may\n" +
-                    "# Tiêu đề\n\nĐây là đoạn **markdown** với *định dạng*.\n" +
-                    "# Tiêu đề\n\nĐây là đoạn **markdown** với *định dạng*.\n" +
-                    "# Tiêu đề\n\nĐây là đoạn **markdown** với *định dạng*.\n";
-            String html = MarkdownUtils.convertToHtml(markdown);
-//            addMessage(html, false);
+            // addMessage(responseContent, false);
+            String html = MarkdownUtils.convertToHtml(responseContent);
+            
+            // Tạo WebView với nội dung HTML
             WebView webView = new WebView();
-            webView.getEngine().loadContent(html);
+            
+            // Ràng buộc chiều rộng WebView với chiều rộng của messageContainer (trừ padding)
+            webView.prefWidthProperty().bind(messageContainer.widthProperty().subtract(30));
+            
+            // Thiết lập các thuộc tính cho WebView
+            webView.setMinHeight(50);
+            webView.setPrefHeight(Region.USE_COMPUTED_SIZE);
+            webView.setMaxHeight(Double.MAX_VALUE);            
+            // Tạo CSS để tự động điều chỉnh kích thước nội dung và loại bỏ thanh cuộn
+            String customCSS = "<style>" +
+                               "body { width: 95%; margin: 0; padding: 10px 25px 10px 10px; word-wrap: break-word; overflow: hidden; }" +
+                               "pre { white-space: pre-wrap; }" +
+                               "code { white-space: pre-wrap; }" +
+                               "html, body { height: auto; overflow: visible; }" +
+                               "</style>";
+                               
+            // Load nội dung HTML với CSS tùy chỉnh
+            webView.getEngine().loadContent(customCSS + "<div id='content'>" + html + "</div>");
+            
+            // HBox chứa WebView
             HBox messageBox = new HBox(webView);
             messageBox.setPadding(new Insets(5));
             messageBox.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
+            HBox.setHgrow(webView, Priority.ALWAYS);
             messageContainer.getChildren().add(messageBox);
-
-            // Tự động cuộn đến đầu của tin nhắn chatbot
-            Platform.runLater(() -> {
-                double messageBoxY = messageBox.getBoundsInParent().getMinY();
-                double containerHeight = messageContainer.getBoundsInParent().getHeight();
-                double scrollPaneHeight = scrollPane.getViewportBounds().getHeight();
-
-                // Tính toán giá trị Vvalue
-                double vValue = messageBoxY / (containerHeight - scrollPaneHeight);
-                scrollPane.setVvalue(vValue);
+              // Tự động điều chỉnh chiều cao của WebView dựa trên nội dung
+            webView.getEngine().getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+                if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                    // Sử dụng JavaScript để lấy chiều cao thực tế của nội dung
+                    Platform.runLater(() -> {
+                        try {
+                            // Sử dụng scrollHeight để đảm bảo lấy được toàn bộ chiều cao của nội dung
+                            Object result = webView.getEngine().executeScript(
+                                "Math.max(document.body.scrollHeight, document.documentElement.scrollHeight, " +
+                                "document.body.offsetHeight, document.documentElement.offsetHeight, " +
+                                "document.body.clientHeight, document.documentElement.clientHeight);"
+                            );
+                            if (result instanceof Number) {
+                                double height = ((Number) result).doubleValue();
+                                webView.setPrefHeight(height + 30); // thêm padding dư để đảm bảo không có scroll
+                                
+                                // Thêm đoạn code để vô hiệu hóa scrollbar trong WebView
+                                webView.getEngine().executeScript(
+                                    "document.body.style.overflow='hidden';" +
+                                    "document.documentElement.style.overflow='hidden';"
+                                );
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            });            
+            // Tự động cuộn đến tin nhắn chatbot mới
+            webView.getEngine().getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+                if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                    // Đợi một chút để nội dung được render hoàn toàn
+                    Platform.runLater(() -> {
+                        // Cuộn xuống tin nhắn mới nhất
+                        scrollPane.setVvalue(1.0);
+                    });
+                }
             });
 
 //            Label responseLabel = new Label(html);
@@ -150,13 +206,5 @@ public class ChatbotPage extends VBox {
         }
 
         messageContainer.getChildren().add(messageBox);
-    }
-
-
-    private String getChatbotResponse(String message) {
-//         Giả lập phản hồi đơn giản
-        return "I'm just a simple bot. You said: " + message;
-
-
     }
 }

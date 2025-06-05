@@ -1,0 +1,38 @@
+/* CSS để ẩn thanh cuộn */
+.no-scroll-bar .scroll-bar:vertical {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-padding: -7;
+}
+
+.no-scroll-bar .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-height: 0;
+    -fx-padding: -7;
+}
+
+/* Tùy chỉnh cho TableView không có thanh cuộn */
+.table-view {
+    -fx-background-insets: 0;
+    -fx-border-width: 1;
+    -fx-border-color: #E0E0E0;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #f0f0f0;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-size: 35px;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #E0E0E0;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #0096C9;
+}

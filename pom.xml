@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-         
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.example</groupId>
     <artifactId>oop_project_chungkhoan</artifactId>
@@ -51,7 +51,7 @@
             <version>6.1.0</version>
         </dependency>
 
-        <!-- JavaFX modules (version 21 - theo file 2) -->
+        <!-- JavaFX modules -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -72,8 +72,6 @@
             <artifactId>javafx-web</artifactId>
             <version>21</version>
         </dependency>
-
-        <!-- javafx-swing, javafx-base, javafx-media vẫn giữ lại từ file 1 -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
@@ -89,6 +87,7 @@
             <artifactId>javafx-media</artifactId>
             <version>21</version>
         </dependency>
+
         <!-- OkHttp -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
@@ -126,7 +125,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>oop.grp1.GUI.Main</mainClass> <!-- Sửa đúng tên class có hàm main -->
+                    <mainClass>oop.grp1.GUI.Main</mainClass>
                 </configuration>
             </plugin>
         </plugins>
