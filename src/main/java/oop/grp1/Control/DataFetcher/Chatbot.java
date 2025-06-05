@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.cdimascio.dotenv.Dotenv;
 import okhttp3.*;
 import oop.grp1.Control.DBManager.ChatbotManager;
-import oop.grp1.Control.Model.ChatResponse;
+import oop.grp1.Model.ChatResponse;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -72,7 +72,7 @@ public class Chatbot {
                     session
             );
 
-            chatbotManager.saveResponse(chatResponse);
+            chatbotManager.savetoDB(chatResponse);
 
             return chatResponse;
         } catch (IOException e) {

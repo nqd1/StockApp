@@ -1,13 +1,14 @@
 package oop.grp1.Control.DBManager;
 
-import oop.grp1.Control.Model.ChatResponse;
-
 import java.sql.*;
 
-public class ChatbotManager {
+import oop.grp1.Model.ChatResponse;
+
+public class ChatbotManager extends DBManager{
     private final String dbPath = "jdbc:sqlite:stockAV.db";
 
     public ChatbotManager() {
+        super();
         initializeDatabase();
     }
 
@@ -30,7 +31,7 @@ public class ChatbotManager {
         }
     }
 
-    public void saveResponse(ChatResponse response) {
+    public void saveToDB(ChatResponse response) {
         String insertSQL = """
             INSERT INTO chatbot_response (searchTime, responseTime, responseContent, session)
             VALUES (?, ?, ?, ?)
@@ -48,7 +49,13 @@ public class ChatbotManager {
             throw new RuntimeException("Error saving response to database: " + e.getMessage(), e);
         }
     }
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(dbPath);
+    protected Connection getConnection() throws SQLException {
+            return DriverManager.getConnection(dbPath);
+        }
+
+    @Override
+    public void saveToDB(String json) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'saveToDB'");
     }
 }
