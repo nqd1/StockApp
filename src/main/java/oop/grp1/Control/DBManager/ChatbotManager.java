@@ -1,13 +1,17 @@
-package oop.grp1.Control.DBManager;
+ package oop.grp1.Control.DBManager;
 
 import java.sql.*;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import oop.grp1.Model.ChatResponse;
 
-public class ChatbotManager {
-    private final String dbPath = "jdbc:sqlite:stockAV.db";
+public class ChatbotManager extends DBManager {
+    private static final String dbUrl = "jdbc:sqlite:stockAV.db";
 
     public ChatbotManager() {
+        super(dbUrl); 
         initializeDatabase();
     }
 
@@ -30,7 +34,7 @@ public class ChatbotManager {
         }
     }
 
-    public void saveResponse(ChatResponse response) {
+    public void saveToDB(ChatResponse response) {
         String insertSQL = """
             INSERT INTO chatbot_response (searchTime, responseTime, responseContent, session)
             VALUES (?, ?, ?, ?)
@@ -48,7 +52,16 @@ public class ChatbotManager {
             throw new RuntimeException("Error saving response to database: " + e.getMessage(), e);
         }
     }
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(dbPath);
+
+    @Override
+    public void saveToDB(String json) {
+        JsonObject jsonObj = JsonParser.parseString(json).getAsJsonObject();
+        ChatResponse response = new ChatResponse(
+            jsonObj.get("searchTime").getAsLong(),
+            jsonObj.get("responseTime").getAsLong(),
+            jsonObj.get("responseContent").getAsString(),
+            jsonObj.get("session").getAsString()
+        );
+        saveToDB(response);
     }
 }

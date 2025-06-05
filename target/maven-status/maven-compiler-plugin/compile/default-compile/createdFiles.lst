@@ -4,6 +4,7 @@ oop\grp1\GUI\StockDetail.class
 oop\grp1\GUI\StockDetail$1.class
 oop\grp1\Control\DBManager\NewsManager.class
 oop\grp1\Control\DataFetcher\Chatbot.class
+oop\grp1\GUI\TrendingstocksPage$2.class
 oop\grp1\Control\DBManager\ChatbotManager.class
 oop\grp1\GUI\StockDetail$4.class
 oop\grp1\GUI\WatchList$2.class
@@ -15,6 +16,7 @@ oop\grp1\GUI\PageManager.class
 oop\grp1\GUI\ViewStockDetail$1.class
 oop\grp1\GUI\ViewStockDetail.class
 org\example\Main.class
+oop\grp1\GUI\TrendingstocksPage$1.class
 oop\grp1\Model\ChatResponse.class
 oop\grp1\TestingAlphaVantage.class
 oop\grp1\GUI\TrendingstocksPage.class
@@ -23,9 +25,11 @@ oop\grp1\GUI\WatchList$4.class
 oop\grp1\Model\News$Topic.class
 oop\grp1\Control\DataFetcher\NewsDF.class
 oop\grp1\Control\DBManager\DBManager.class
+oop\grp1\GUI\TrendingstocksPage$4.class
 oop\grp1\GUI\StockDetail$2.class
 oop\grp1\Model\Stock.class
 oop\grp1\Control\JsonBeautifier.class
+oop\grp1\GUI\TrendingstocksPage$3.class
 oop\grp1\GUI\StockDetail$5.class
 oop\grp1\GUI\TrendingstocksPage$StockData.class
 oop\grp1\Control\DBManager\StockManager.class
@@ -38,6 +42,5 @@ oop\grp1\GUI\Sidebar.class
 oop\grp1\GUI\StockDetail$StockWithInterest.class
 oop\grp1\Control\DataFetcher\StockDF.class
 oop\grp1\GUI\NewsPage.class
-oop\grp1\GUI\Stock.class
 oop\grp1\GUI\MarkdownUtils.class
 oop\grp1\GUI\TrendingstocksPage$StockChangeData.class

@@ -101,7 +101,6 @@ public class WatchList extends VBox {
         this.setEffect(new javafx.scene.effect.DropShadow(10, Color.GRAY));
         VBox.setVgrow(watchListTable, Priority.ALWAYS);
 
-        // Lắng nghe thay đổi để làm mới bảng
         watchListStocks.addListener((javafx.collections.ListChangeListener<StockDetail.StockWithInterest>) change -> {
             watchListTable.refresh();
             System.out.println("watchListStocks updated: " + watchListStocks);

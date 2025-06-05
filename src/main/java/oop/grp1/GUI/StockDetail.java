@@ -10,6 +10,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import oop.grp1.Model.Stock;
 
 import java.util.List;
 

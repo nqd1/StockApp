@@ -72,7 +72,7 @@ public class Chatbot {
                     session
             );
 
-            chatbotManager.saveResponse(chatResponse);
+            chatbotManager.saveToDB(chatResponse);
 
             return chatResponse;
         } catch (IOException e) {

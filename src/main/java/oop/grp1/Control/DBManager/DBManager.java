@@ -15,6 +15,6 @@ public abstract class DBManager {
     protected Connection getConnection() throws SQLException {
         return DriverManager.getConnection(dbUrl);
     }
-    public abstract void saveToDB(Object obj);
+    public abstract void saveToDB(String json);
 
 }
