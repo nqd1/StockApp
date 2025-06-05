@@ -7,8 +7,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import oop.grp1.GUI.TrendingstocksPage.StockChangeData;
-import oop.grp1.GUI.TrendingstocksPage.StockData;
 import oop.grp1.Model.Stock;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
