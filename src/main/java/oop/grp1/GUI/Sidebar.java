@@ -15,21 +15,22 @@ import javafx.util.Duration;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.function.Consumer;
-
 public class Sidebar extends VBox {
-    private final Button dashboardButton;
-    private final Button chatbotButton;
+    private final Button trendingButton;
     private final Button newsButton;
-    private final double expandedWidth = 150;
+    private final Button stockDetailButton;
+    private final Button viewStockButton;
+    private final Button chatbotButton;
+    
+    private final double expandedWidth = 210;
     private final double collapsedWidth = 50;
     private Label logoLabel;  // Bỏ final để có thể gán trong try-catch
 
-    public Sidebar(Consumer<String> onNavigate) {
+    public Sidebar() {
         // Initial state: Collapsed
         this.setPrefWidth(collapsedWidth);
-        this.setStyle("-fx-background-color: #000000;");
-//        this.setSpacing(10);        // Logo
+        this.getStyleClass().add("sidebar");
+        
         try {
             Image logoImage = new Image(getClass().getResourceAsStream("/images/logo.png"));
             ImageView logoView = new ImageView(logoImage);
@@ -58,56 +59,46 @@ public class Sidebar extends VBox {
         this.getChildren().add(spacer);
         
         // Navigation Buttons with FontAwesome Icons
-        dashboardButton = createButton("Dashboard", FontAwesomeSolid.CHART_LINE);
+        trendingButton = createButton("Cổ Phiếu Nổi Bật", FontAwesomeSolid.CHART_LINE);
+        newsButton = createButton("Tin Tức", FontAwesomeSolid.NEWSPAPER);
+        stockDetailButton = createButton("Danh Sách Cổ Phiếu", FontAwesomeSolid.LIST);
+        viewStockButton = createButton("Chi Tiết Cổ Phiếu", FontAwesomeSolid.CHART_BAR);
         chatbotButton = createButton("Chatbot", FontAwesomeSolid.ROBOT);
-        newsButton = createButton("Tin tức", FontAwesomeSolid.NEWSPAPER);
 
         // Initial visibility for buttons
         setButtonsVisibility(false);
 
-        dashboardButton.setOnAction(e -> onNavigate.accept("Dashboard"));
-        chatbotButton.setOnAction(e -> onNavigate.accept("Chatbot"));
-        newsButton.setOnAction(e -> onNavigate.accept("News"));
+        // Set button actions
+        trendingButton.setOnAction(e -> PageManager.getInstance().showPage("TrendingstocksPage"));
+        newsButton.setOnAction(e -> PageManager.getInstance().showPage("NewsPage"));
+        stockDetailButton.setOnAction(e -> PageManager.getInstance().showPage("StockDetail"));
+        viewStockButton.setOnAction(e -> PageManager.getInstance().showPage("ViewStockDetail"));
+        chatbotButton.setOnAction(e -> PageManager.getInstance().showPage("ChatbotPage"));
 
-        this.getChildren().addAll(dashboardButton, chatbotButton, newsButton);
+        this.getChildren().addAll(
+            trendingButton,
+            newsButton,
+            stockDetailButton,
+            viewStockButton,
+            chatbotButton
+        );
 
         // Mouse events for expand/collapse
         this.setOnMouseEntered(e -> expandSidebar());
         this.setOnMouseExited(e -> collapseSidebar());
-    }    private Button createButton(String text, FontAwesomeSolid iconType) {
+    }    
+    
+    private Button createButton(String text, FontAwesomeSolid iconType) {
         FontIcon icon = new FontIcon(iconType);
         icon.setIconColor(Color.WHITE);
         icon.setIconSize(20);
 
         Button button = new Button(text, icon);
-        button.setStyle(
-        "-fx-pref-width: 150;" + 
-        "-fx-text-fill: white;" + // Màu chữ trắng để tương phản với nền đen
-        "-fx-background-color: #1a1a1a;" + // Nền xám đậm
-        "-fx-background-radius: 5;" + // Bo góc cho nút
-        "-fx-border-width: 1;" // Độ dày viền
-    );
-        button.setContentDisplay(ContentDisplay.LEFT); // Căn chỉnh icon và text theo chiều ngang
-        button.setAlignment(Pos.CENTER_LEFT); // Căn chỉnh toàn bộ nội dung sang trái
-        button.setPrefHeight(40); // Chiều cao cố định
-        button.setMaxWidth(Double.MAX_VALUE); // Đảm bảo nút chiếm toàn bộ chiều rộng
-        
-        // Thêm hiệu ứng hover
-        button.setOnMouseEntered(e -> button.setStyle(
-            "-fx-pref-width: 150;" + 
-            "-fx-text-fill: white;" + 
-            "-fx-background-color: #2a2a2a;" + // Màu sáng hơn khi hover
-            "-fx-background-radius: 5;" + 
-            "-fx-border-width: 1;"
-        ));
-        
-        button.setOnMouseExited(e -> button.setStyle(
-            "-fx-pref-width: 150;" + 
-            "-fx-text-fill: white;" + 
-            "-fx-background-color: #1a1a1a;" + // Màu gốc
-            "-fx-background-radius: 5;" + 
-            "-fx-border-width: 1;"
-        ));
+        button.getStyleClass().add("sidebar-button");
+        button.setContentDisplay(ContentDisplay.LEFT);
+        button.setAlignment(Pos.CENTER_LEFT);
+        button.setPrefWidth(expandedWidth);
+        button.setMaxWidth(Double.MAX_VALUE);
         
         return button;
     }
@@ -137,8 +128,10 @@ public class Sidebar extends VBox {
     }
 
     private void setButtonsVisibility(boolean visible) {
-        dashboardButton.setText(visible ? "Dashboard" : "");
+        trendingButton.setText(visible ? "Cổ Phiếu Nổi Bật" : "");
+        newsButton.setText(visible ? "Tin Tức" : "");
+        stockDetailButton.setText(visible ? "Danh Sách Cổ Phiếu" : "");
+        viewStockButton.setText(visible ? "Chi Tiết Cổ Phiếu" : "");
         chatbotButton.setText(visible ? "Chatbot" : "");
-        newsButton.setText(visible ? "Tin tức" : "");
     }
 }

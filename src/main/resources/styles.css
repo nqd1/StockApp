@@ -11,15 +11,36 @@
     -fx-padding: -7;
 }
 
+/* Background for the entire application */
+.root {
+    -fx-background-image: url("/images/bg.png");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
+
+/* Content area with semi-transparent background */
+.content-area {
+    -fx-background-color: rgba(244, 244, 244, 0.7);
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: rgba(220, 220, 220, 0.7);
+    -fx-border-width: 1;
+}
+
 /* Tùy chỉnh cho TableView không có thanh cuộn */
 .table-view {
     -fx-background-insets: 0;
     -fx-border-width: 1;
     -fx-border-color: #E0E0E0;
+    -fx-background-color: rgba(255, 255, 255, 0.85); /* Trong suốt một chút */
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
 }
 
 .table-view .column-header-background {
-    -fx-background-color: #f0f0f0;
+    -fx-background-color: rgba(240, 240, 240, 0.9);
+    -fx-background-radius: 8 8 0 0;
 }
 
 .table-view .column-header {
@@ -28,11 +49,92 @@
 }
 
 .table-view .table-row-cell {
-    -fx-background-color: white;
+    -fx-background-color: rgba(255, 255, 255, 0.8);
     -fx-border-width: 0 0 1 0;
     -fx-border-color: #E0E0E0;
 }
 
 .table-view .table-row-cell:selected {
-    -fx-background-color: #0096C9;
+    -fx-background-color: rgba(0, 150, 201, 0.8);
+}
+
+/* Style cho Sidebar */
+.sidebar {
+    -fx-background-color: rgba(0, 0, 0, 0.85); /* Trong suốt một chút */
+    -fx-transition: width 0.3s;
+    -fx-spacing: 5;
+    -fx-padding: 0 5 5 5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0, 0, 0);
+    -fx-background-radius: 0 8 8 0;
+}
+
+.sidebar-button {
+    -fx-pref-width: 210; /* Tăng 40% so với 150 */
+    -fx-text-fill: white;
+    -fx-background-color: rgba(26, 26, 26, 0.8); /* Trong suốt một chút */
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-border-color: rgba(40, 40, 40, 0.8);
+    -fx-content-display: left;
+    -fx-alignment: center-left;
+    -fx-pref-height: 40;
+    -fx-padding: 0 0 0 10; /* Thêm padding bên trái để cách xa hơn */
+}
+
+.sidebar-button:hover {
+    -fx-background-color: rgba(42, 42, 42, 0.9);
+}
+
+/* Style cho các button */
+.button {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+/* Style cho các text field */
+.text-field {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+/* Style cho các combo box */
+.combo-box {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+/* Style cho các list view */
+.list-view {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+/* Style cho các scroll pane */
+.scroll-pane {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+/* Style cho các vbox, hbox, pane */
+.vbox, .hbox, .pane, .stack-pane, .border-pane, .anchor-pane, .grid-pane {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+/* Label title style */
+.title-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+/* Card style */
+.card {
+    -fx-background-color: rgba(255, 255, 255, 0.85);
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #dcdcdc;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 1);
 }

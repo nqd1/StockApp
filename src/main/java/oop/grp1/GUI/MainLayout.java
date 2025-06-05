@@ -1,39 +1,38 @@
 package oop.grp1.GUI;
 
+import javafx.geometry.Insets;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 
 public class MainLayout extends BorderPane {
     private final Sidebar sidebar;
-    private final PageManager pageManager;
+    private final StackPane contentArea; // Changed from Region to StackPane
 
     public MainLayout() {
-        pageManager = new PageManager();
-
-        // Initialize Sidebar with callbacks
-        sidebar = new Sidebar(this::handleNavigation);
+        // Initialize sidebar
+        sidebar = new Sidebar();
         this.setLeft(sidebar);
 
-        // Set Initial Content
-        setContent(pageManager.getDashboardPage());
-    }    
-    
-    private void handleNavigation(String page) {
-        switch (page) {
-            case "Dashboard":
-                setContent(pageManager.getDashboardPage());
-                break;
-            case "Chatbot":
-                setContent(pageManager.getChatbotPage());
-                break;
-            case "News":
-                setContent(pageManager.getNewsPage());
-                break;
-            default:
-                System.out.println("Unknown page: " + page);
-        }
+        // Initialize content area
+        contentArea = new StackPane();
+        contentArea.getStyleClass().add("content-area");
+        this.setCenter(contentArea);
+
+        // Set padding and growth
+        this.setPadding(new Insets(10));
+        BorderPane.setMargin(sidebar, new Insets(0, 10, 0, 0));
+        BorderPane.setMargin(contentArea, new Insets(0, 0, 0, 10));
+
+        // Initialize PageManager with content area and show default page
+        PageManager.getInstance().setContentArea(contentArea);
+        PageManager.getInstance().showPage("TrendingstocksPage");
     }
 
-    private void setContent(javafx.scene.Node content) {
-        this.setCenter(content);
+    public Sidebar getSidebar() {
+        return sidebar;
+    }
+
+    public StackPane getContentArea() { // Updated return type
+        return contentArea;
     }
 }

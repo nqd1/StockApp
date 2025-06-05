@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application {    @Override
     public void start(Stage primaryStage) {
-        Scene scene = new Scene(new MainLayout(), 800, 600);
+        Scene scene = new Scene(new MainLayout(), 1000, 700);
         
         // Add CSS for hiding scrollbars
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
@@ -17,7 +17,7 @@ public class Main extends Application {    @Override
             Image logoIcon = new Image(getClass().getResourceAsStream("/images/logo.png"));
             primaryStage.getIcons().add(logoIcon);
         } catch (Exception e) {
-            System.err.println("Could not load logo.png for title bar: " + e.getMessage());
+            System.err.println("Could not load logo image for title bar: " + e.getMessage());
         }
         
         primaryStage.setTitle("Stock Management App");
