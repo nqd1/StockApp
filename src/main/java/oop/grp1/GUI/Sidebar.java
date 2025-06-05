@@ -6,83 +6,109 @@ import javafx.animation.Timeline;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
+import org.kordamp.ikonli.javafx.FontIcon;
+
 import java.util.function.Consumer;
 
 public class Sidebar extends VBox {
     private final Button dashboardButton;
     private final Button chatbotButton;
-    private final Button stockDetailButton;
-    private final Button userdetailButton;
-    private final Button watchlistButton;
-    private final Button viewStockDetailButton;
+    private final Button newsButton;
     private final double expandedWidth = 150;
     private final double collapsedWidth = 50;
-    private final Label logoLabel;
+    private Label logoLabel;  // Bỏ final để có thể gán trong try-catch
 
-    public Sidebar(Consumer<String> onNavigate, Button stockDetailButton) {
-        this.stockDetailButton = stockDetailButton;
-
+    public Sidebar(Consumer<String> onNavigate) {
+        // Initial state: Collapsed
         this.setPrefWidth(collapsedWidth);
         this.setStyle("-fx-background-color: #000000;");
-
-        logoLabel = new Label("Logo");
-        logoLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-alignment: center;");
+//        this.setSpacing(10);        // Logo
+        try {
+            Image logoImage = new Image(getClass().getResourceAsStream("/images/logo.png"));
+            ImageView logoView = new ImageView(logoImage);
+            logoView.setFitHeight(45); // Tăng chiều cao
+            logoView.setFitWidth(45);  // Tăng chiều rộng
+            logoView.setPreserveRatio(true);
+            
+            logoLabel = new Label();
+            logoLabel.setGraphic(logoView);
+            logoLabel.setStyle("-fx-alignment: center; -fx-pref-width: " + collapsedWidth + "; -fx-pref-height: 60;");
+            logoLabel.setMaxWidth(Double.MAX_VALUE); // Chiếm toàn bộ chiều rộng
+            logoLabel.setPrefHeight(60); // Tăng chiều cao container
+        } catch (Exception e) {
+            // Fallback nếu không load được logo
+            logoLabel = new Label("STOCK");
+            logoLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: center; -fx-font-weight: bold; " +
+                             "-fx-pref-width: " + collapsedWidth + "; -fx-pref-height: 60;");
+            logoLabel.setMaxWidth(Double.MAX_VALUE);
+            logoLabel.setPrefHeight(60);
+        }
         this.getChildren().add(logoLabel);
+        
+        // Thêm spacer sau logo
+        Label spacer = new Label();
+        spacer.setPrefHeight(10);
+        this.getChildren().add(spacer);
+        
+        // Navigation Buttons with FontAwesome Icons
+        dashboardButton = createButton("Dashboard", FontAwesomeSolid.CHART_LINE);
+        chatbotButton = createButton("Chatbot", FontAwesomeSolid.ROBOT);
+        newsButton = createButton("Tin tức", FontAwesomeSolid.NEWSPAPER);
 
-        dashboardButton = createButton("Dashboard", "/images/conlonduc.png");
-        chatbotButton = createButton("Chatbot", "/images/conlonduc.png");
-        userdetailButton = createButton("User Detail", "/images/conlonduc.png");
-        watchlistButton = createButton("Watchlist", "/images/conlonduc.png");
-        viewStockDetailButton = createButton("View Stock Chart", "/images/conlonduc.png");
-
-        this.stockDetailButton.setStyle(
-                "-fx-pref-width: 150;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-background-color: #1a1a1a;" +
-                        "-fx-background-radius: 5;" +
-                        "-fx-border-width: 1;"
-        );
-        this.stockDetailButton.setContentDisplay(ContentDisplay.LEFT);
-        this.stockDetailButton.setAlignment(Pos.CENTER_LEFT);
-        this.stockDetailButton.setPrefHeight(40);
-        this.stockDetailButton.setMaxWidth(Double.MAX_VALUE);
-
+        // Initial visibility for buttons
         setButtonsVisibility(false);
 
         dashboardButton.setOnAction(e -> onNavigate.accept("Dashboard"));
         chatbotButton.setOnAction(e -> onNavigate.accept("Chatbot"));
-        userdetailButton.setOnAction(e -> onNavigate.accept("UserDetail"));
-        watchlistButton.setOnAction(e -> onNavigate.accept("Watchlist"));
-        stockDetailButton.setOnAction(e -> onNavigate.accept("StockDetail"));
-        viewStockDetailButton.setOnAction(e -> onNavigate.accept("ViewStockDetail"));
+        newsButton.setOnAction(e -> onNavigate.accept("News"));
 
-        this.getChildren().addAll(dashboardButton, chatbotButton, userdetailButton, watchlistButton, stockDetailButton, viewStockDetailButton);
+        this.getChildren().addAll(dashboardButton, chatbotButton, newsButton);
 
+        // Mouse events for expand/collapse
         this.setOnMouseEntered(e -> expandSidebar());
         this.setOnMouseExited(e -> collapseSidebar());
-    }
-
-    private Button createButton(String text, String iconPath) {
-        ImageView icon = new ImageView(getClass().getResource(iconPath).toExternalForm());
-        icon.setFitWidth(24);
-        icon.setFitHeight(35);
+    }    private Button createButton(String text, FontAwesomeSolid iconType) {
+        FontIcon icon = new FontIcon(iconType);
+        icon.setIconColor(Color.WHITE);
+        icon.setIconSize(20);
 
         Button button = new Button(text, icon);
         button.setStyle(
-                "-fx-pref-width: 150;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-background-color: #1a1a1a;" +
-                        "-fx-background-radius: 5;" +
-                        "-fx-border-width: 1;"
-        );
-        button.setContentDisplay(ContentDisplay.LEFT);
-        button.setAlignment(Pos.CENTER_LEFT);
-        button.setPrefHeight(40);
-        button.setMaxWidth(Double.MAX_VALUE);
+        "-fx-pref-width: 150;" + 
+        "-fx-text-fill: white;" + // Màu chữ trắng để tương phản với nền đen
+        "-fx-background-color: #1a1a1a;" + // Nền xám đậm
+        "-fx-background-radius: 5;" + // Bo góc cho nút
+        "-fx-border-width: 1;" // Độ dày viền
+    );
+        button.setContentDisplay(ContentDisplay.LEFT); // Căn chỉnh icon và text theo chiều ngang
+        button.setAlignment(Pos.CENTER_LEFT); // Căn chỉnh toàn bộ nội dung sang trái
+        button.setPrefHeight(40); // Chiều cao cố định
+        button.setMaxWidth(Double.MAX_VALUE); // Đảm bảo nút chiếm toàn bộ chiều rộng
+        
+        // Thêm hiệu ứng hover
+        button.setOnMouseEntered(e -> button.setStyle(
+            "-fx-pref-width: 150;" + 
+            "-fx-text-fill: white;" + 
+            "-fx-background-color: #2a2a2a;" + // Màu sáng hơn khi hover
+            "-fx-background-radius: 5;" + 
+            "-fx-border-width: 1;"
+        ));
+        
+        button.setOnMouseExited(e -> button.setStyle(
+            "-fx-pref-width: 150;" + 
+            "-fx-text-fill: white;" + 
+            "-fx-background-color: #1a1a1a;" + // Màu gốc
+            "-fx-background-radius: 5;" + 
+            "-fx-border-width: 1;"
+        ));
+        
         return button;
     }
 
@@ -90,12 +116,20 @@ public class Sidebar extends VBox {
         Timeline expand = new Timeline(
                 new KeyFrame(Duration.millis(300), new KeyValue(this.prefWidthProperty(), expandedWidth))
         );
-        expand.setOnFinished(finishEvent -> setButtonsVisibility(true));
+        expand.setOnFinished(finishEvent -> {
+            setButtonsVisibility(true); // Show text after expanding
+            // Cập nhật style cho logo khi expand
+            logoLabel.setStyle(logoLabel.getStyle().replace("-fx-pref-width: " + collapsedWidth, 
+                                                           "-fx-pref-width: " + expandedWidth));
+        });
         expand.play();
     }
 
     private void collapseSidebar() {
-        setButtonsVisibility(false);
+        setButtonsVisibility(false); // Hide text before collapsing
+        // Cập nhật style cho logo khi collapse
+        logoLabel.setStyle(logoLabel.getStyle().replace("-fx-pref-width: " + expandedWidth, 
+                                                       "-fx-pref-width: " + collapsedWidth));
         Timeline collapse = new Timeline(
                 new KeyFrame(Duration.millis(300), new KeyValue(this.prefWidthProperty(), collapsedWidth))
         );
@@ -105,8 +139,6 @@ public class Sidebar extends VBox {
     private void setButtonsVisibility(boolean visible) {
         dashboardButton.setText(visible ? "Dashboard" : "");
         chatbotButton.setText(visible ? "Chatbot" : "");
-        userdetailButton.setText(visible ? "User Detail" : "");
-        watchlistButton.setText(visible ? "Watchlist" : "");
-        viewStockDetailButton.setText(visible ? "View Stock Chart" : "");
+        newsButton.setText(visible ? "Tin tức" : "");
     }
 }

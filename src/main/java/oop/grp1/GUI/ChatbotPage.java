@@ -3,7 +3,7 @@ package oop.grp1.GUI;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import oop.grp1.Control.DataFetcher.Chatbot;
-import oop.grp1.Control.Model.ChatResponse;
+import oop.grp1.Model.ChatResponse;
 
 import com.google.gson.Gson;
 

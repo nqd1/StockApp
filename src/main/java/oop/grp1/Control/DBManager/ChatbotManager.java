@@ -1,8 +1,8 @@
 package oop.grp1.Control.DBManager;
 
-import oop.grp1.Control.Model.ChatResponse;
-
 import java.sql.*;
+
+import oop.grp1.Model.ChatResponse;
 
 public class ChatbotManager {
     private final String dbPath = "jdbc:sqlite:stockAV.db";

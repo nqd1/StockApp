@@ -1,4 +1,4 @@
-package oop.grp1.Control.Model;
+package oop.grp1.Model;
 
 public class ChatResponse {
     private long searchTime;

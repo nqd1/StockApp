@@ -15,6 +15,7 @@ oop\grp1\GUI\PageManager.class
 oop\grp1\GUI\ViewStockDetail$1.class
 oop\grp1\GUI\ViewStockDetail.class
 org\example\Main.class
+oop\grp1\Model\ChatResponse.class
 oop\grp1\TestingAlphaVantage.class
 oop\grp1\GUI\TrendingstocksPage.class
 oop\grp1\GUI\WatchList$1.class
@@ -25,14 +26,12 @@ oop\grp1\Control\DBManager\DBManager.class
 oop\grp1\GUI\StockDetail$2.class
 oop\grp1\Model\Stock.class
 oop\grp1\Control\JsonBeautifier.class
-oop\grp1\GUI\DashboardPage.class
 oop\grp1\GUI\StockDetail$5.class
 oop\grp1\GUI\TrendingstocksPage$StockData.class
 oop\grp1\Control\DBManager\StockManager.class
 oop\grp1\GUI\StockDetail$3.class
 oop\grp1\Testing.class
 oop\grp1\GUI\ChatbotPage.class
-oop\grp1\Control\Model\ChatResponse.class
 oop\grp1\GUI\MainLayout.class
 oop\grp1\GUI\WatchList$3.class
 oop\grp1\GUI\Sidebar.class

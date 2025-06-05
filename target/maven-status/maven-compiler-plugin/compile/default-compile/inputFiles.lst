@@ -7,9 +7,7 @@ C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\Control\DBManager\D
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\Control\DBManager\NewsManager.java
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\Control\DBManager\StockManager.java
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\Control\JsonBeautifier.java
-C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\Control\Model\ChatResponse.java
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\GUI\ChatbotPage.java
-C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\GUI\DashboardPage.java
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\GUI\Main.java
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\GUI\MainLayout.java
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\GUI\MarkdownUtils.java
@@ -21,6 +19,7 @@ C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\GUI\StockDetail.jav
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\GUI\TrendingstocksPage.java
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\GUI\ViewStockDetail.java
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\GUI\WatchList.java
+C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\Model\ChatResponse.java
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\Model\News.java
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\Model\Stock.java
 C:\Users\nqd1\Desktop\me\prj\stockApp\src\main\java\oop\grp1\Testing.java

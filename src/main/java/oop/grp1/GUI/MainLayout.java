@@ -1,6 +1,5 @@
 package oop.grp1.GUI;
 
-import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 
 public class MainLayout extends BorderPane {
@@ -10,13 +9,14 @@ public class MainLayout extends BorderPane {
     public MainLayout() {
         pageManager = new PageManager();
 
-        Button stockDetailButton = new Button("Stock Detail");
-        sidebar = new Sidebar(this::handleNavigation, stockDetailButton);
+        // Initialize Sidebar with callbacks
+        sidebar = new Sidebar(this::handleNavigation);
         this.setLeft(sidebar);
 
+        // Set Initial Content
         setContent(pageManager.getDashboardPage());
-    }
-
+    }    
+    
     private void handleNavigation(String page) {
         switch (page) {
             case "Dashboard":
@@ -25,14 +25,8 @@ public class MainLayout extends BorderPane {
             case "Chatbot":
                 setContent(pageManager.getChatbotPage());
                 break;
-            case "Watchlist":
-                setContent(pageManager.getWatchListPage());
-                break;
-            case "StockDetail":
-                setContent(pageManager.getStockDetailPageByTicker("AAPL")); // Replace with dynamic ticker
-                break;
-            case "ViewStockDetail":
-                setContent(pageManager.getViewStockDetailPage());
+            case "News":
+                setContent(pageManager.getNewsPage());
                 break;
             default:
                 System.out.println("Unknown page: " + page);
