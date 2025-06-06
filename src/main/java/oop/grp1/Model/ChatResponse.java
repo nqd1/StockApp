@@ -5,6 +5,7 @@ public class ChatResponse {
     private long responseTime;
     private String responseContent;
     private String session;
+    private String userQuery;
 
     public ChatResponse(long searchTime, long responseTime, String responseContent, String session) {
         this.searchTime = searchTime;
@@ -28,6 +29,10 @@ public class ChatResponse {
     public String getSession() {
         return session;
     }
+    
+    public String getUserQuery() {
+        return userQuery;
+    }
 
     public void setSearchTime(long searchTime) {
         this.searchTime = searchTime;
@@ -43,5 +48,9 @@ public class ChatResponse {
 
     public void setSession(String session) {
         this.session = session;
+    }
+    
+    public void setUserQuery(String userQuery) {
+        this.userQuery = userQuery;
     }
 }
