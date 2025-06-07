@@ -23,7 +23,7 @@ public class ChatbotManager extends DBManager {
         """;
 
         String alterTableUserQuerySQL = """
-            ALTER TABLE chatbot_response ADD COLUMN user_query TEXT;
+            ALTER TABLE chatbot_response ADD COLUMN user_query TEXT NOT NULL;
         """;
 
         String createTableSQL = """
@@ -33,7 +33,7 @@ public class ChatbotManager extends DBManager {
                 responseTime INTEGER NOT NULL,
                 responseContent TEXT NOT NULL,
                 session TEXT NOT NULL,
-                user_query TEXT,
+                user_query TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """;
@@ -84,12 +84,9 @@ public class ChatbotManager extends DBManager {
             jsonObj.get("searchTime").getAsLong(),
             jsonObj.get("responseTime").getAsLong(),
             jsonObj.get("responseContent").getAsString(),
-            jsonObj.get("session").getAsString()
+            jsonObj.get("session").getAsString(),
+            jsonObj.get("user_query").getAsString()
         );
-        
-        if (jsonObj.has("userQuery")) {
-            response.setUserQuery(jsonObj.get("userQuery").getAsString());
-        }
         
         saveToDB(response);
     }
@@ -110,9 +107,9 @@ public class ChatbotManager extends DBManager {
                     rs.getLong("searchTime"),
                     rs.getLong("responseTime"),
                     rs.getString("responseContent"),
-                    rs.getString("session")
+                    rs.getString("session"),
+                    rs.getString("user_query")
                 );
-                response.setUserQuery(rs.getString("user_query"));
                 history.add(response);
             }
         } catch (SQLException e) {

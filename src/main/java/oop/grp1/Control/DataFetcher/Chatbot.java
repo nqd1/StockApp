@@ -178,11 +178,9 @@ public class Chatbot {
                     searchStartTime,
                     responseStartTime,
                     responseContent,
-                    session
+                    session,
+                    query
             );
-            
-            // Thiết lập câu hỏi của người dùng
-            chatResponse.setUserQuery(query);
 
             // Lưu vào database
             chatbotManager.saveToDB(chatResponse);
