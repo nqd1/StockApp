@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import oop.grp1.Control.DBManager.NewsManager;
 
 /**
@@ -38,7 +39,8 @@ public class News {
     private List<TickerSentiment> tickerSentiments;
     
     // Database connection
-    private static final String DB_URL = "jdbc:sqlite:stockAV.db";
+    private static final Dotenv dotenv = Dotenv.load();
+    private static final String DB_URL = dotenv.get("DB_URL");
     
     // Inner classes for related data
     public static class Topic {

@@ -112,17 +112,33 @@ public class WatchList extends VBox {
     }
 
     public static void addToWatchList(Stock stock) {
-        if (stock != null && !watchListStocks.contains(stock)) {
+        if (stock == null) return;
+
+        int index = watchListStocks.indexOf(stock);
+        if (index != -1) {
+            watchListStocks.set(index, stock);
+            System.out.println("Updated in watchListStocks: " + stock);
+        } else {
             watchListStocks.add(stock);
             System.out.println("Added to watchListStocks: " + stock);
-        } else {
-            System.out.println("Stock already in watchListStocks or null: " + stock);
         }
     }
 
     public static void removeFromWatchList(Stock stock) {
         watchListStocks.remove(stock);
         System.out.println("Removed from watchListStocks: " + stock);
+    }
+
+    public static boolean isInWatchList(String ticker) {
+        if (ticker == null) {
+            return false;
+        }
+        for (Stock stock : watchListStocks) {
+            if (ticker.equals(stock.getTicker())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static ObservableList<Stock> getWatchListStocks() {

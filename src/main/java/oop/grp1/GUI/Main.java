@@ -3,13 +3,23 @@ package oop.grp1.GUI;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
-public class Main extends Application {    @Override
+public class Main extends Application {
+    @Override
     public void start(Stage primaryStage) {
-        Scene scene = new Scene(new MainLayout(), 1000, 700);
+        // Sử dụng transparent để có thể bo góc
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
         
-        // Add CSS for hiding scrollbars
+        MainLayout mainLayout = new MainLayout(primaryStage);
+        mainLayout.getStyleClass().add("main-layout");
+        
+        Scene scene = new Scene(mainLayout, 1000, 700);
+        scene.setFill(Color.TRANSPARENT);
+        
+        // Add CSS for hiding scrollbars and custom styling
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
         
         // Add logo to title bar
@@ -23,6 +33,9 @@ public class Main extends Application {    @Override
         primaryStage.setTitle("Stock Management App");
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        // Center the stage on screen
+        primaryStage.centerOnScreen();
     }
 
     public static void main(String[] args) {

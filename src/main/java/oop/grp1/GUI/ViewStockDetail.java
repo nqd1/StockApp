@@ -24,8 +24,8 @@ public class ViewStockDetail extends VBox {
     private TextField searchField;
     private Button searchButton;
     private final Label stockInfoLabel;
-    private final BarChart<String, Number> priceChart;
-    private final BarChart<String, Number> volumeChart;
+    private final LineChart<String, Number> priceChart;
+    private final LineChart<String, Number> volumeChart;
     private final VBox chartContainer;
     private final Label noDataLabel;
     private final ProgressIndicator loadingIndicator;
@@ -180,38 +180,35 @@ public class ViewStockDetail extends VBox {
         return panel;
     }
 
-    private BarChart<String, Number> createPriceChart() {
+    private LineChart<String, Number> createPriceChart() {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Thời gian (Điểm dữ liệu)");
+        xAxis.setLabel("Thời gian");
         yAxis.setLabel("Giá ($)");
         yAxis.setAutoRanging(false);
 
-        BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
+        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
         chart.setTitle("Biểu Đồ Biến Động Giá");
         chart.setPrefHeight(250);
         chart.setStyle("-fx-background-color: #ffffff;");
-        chart.setCategoryGap(1);
-        chart.setBarGap(0.5);
+        chart.setCreateSymbols(true);
         chart.setLegendVisible(true);
 
         return chart;
     }
 
-    private BarChart<String, Number> createVolumeChart() {
+    private LineChart<String, Number> createVolumeChart() {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Thời gian (Điểm dữ liệu)");
+        xAxis.setLabel("Thời gian");
         yAxis.setLabel("Khối lượng");
         yAxis.setAutoRanging(false);
 
-        BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
+        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
         chart.setTitle("Biểu Đồ Khối Lượng Giao Dịch");
         chart.setPrefHeight(150);
         chart.setStyle("-fx-background-color: #ffffff;");
-        chart.setCategoryGap(1);
-        chart.setBarGap(0.5);
-
+        chart.setCreateSymbols(true);
         return chart;
     }
 
@@ -436,11 +433,23 @@ public class ViewStockDetail extends VBox {
 
         for (int i = stockData.size() - 1; i >= 0; i -= step) {
             Stock stock = stockData.get(i);
-            String timePointCategory = String.valueOf((stockData.size() - i) / step);
-            openSeries.getData().add(new XYChart.Data<>(timePointCategory, stock.getOpen()));
-            closeSeries.getData().add(new XYChart.Data<>(timePointCategory, stock.getClose()));
-            highSeries.getData().add(new XYChart.Data<>(timePointCategory, stock.getHigh()));
-            lowSeries.getData().add(new XYChart.Data<>(timePointCategory, stock.getLow()));
+            String timePointCategory = stock.getShortTimestamp();
+
+            XYChart.Data<String, Number> openData = new XYChart.Data<>(timePointCategory, stock.getOpen());
+            openData.setExtraValue(stock);
+            openSeries.getData().add(openData);
+
+            XYChart.Data<String, Number> closeData = new XYChart.Data<>(timePointCategory, stock.getClose());
+            closeData.setExtraValue(stock);
+            closeSeries.getData().add(closeData);
+
+            XYChart.Data<String, Number> highData = new XYChart.Data<>(timePointCategory, stock.getHigh());
+            highData.setExtraValue(stock);
+            highSeries.getData().add(highData);
+
+            XYChart.Data<String, Number> lowData = new XYChart.Data<>(timePointCategory, stock.getLow());
+            lowData.setExtraValue(stock);
+            lowSeries.getData().add(lowData);
         }
 
         // Thêm series dựa vào trạng thái hiển thị
@@ -461,7 +470,7 @@ public class ViewStockDetail extends VBox {
 
         final int finalStep = step;
         Platform.runLater(() -> {
-            setupBarDataEvents(stockData, finalStep);
+            setupLineChartDataEvents(stockData);
             setupLegendClickEvent();
         });
     }
@@ -548,7 +557,7 @@ public class ViewStockDetail extends VBox {
     }
 
     // Thiết lập sự kiện cho các cột dữ liệu
-    private void setupBarDataEvents(List<Stock> stockData, int step) {
+    private void setupLineChartDataEvents(List<Stock> stockData) {
         for (int i = 0; i < priceChart.getData().size(); i++) {
             XYChart.Series<String, Number> series = priceChart.getData().get(i);
             String color;
@@ -583,10 +592,10 @@ public class ViewStockDetail extends VBox {
             for (XYChart.Data<String, Number> item : series.getData()) {
                 if (item.getNode() != null) {
                     item.getNode().setStyle(
-                            "-fx-bar-fill: " + color + ";" +
-                                    "-fx-border-color: black;" +
-                                    "-fx-border-width: 1;" +
-                                    "-fx-background-color: " + color + ";"
+                            "-fx-background-color: " + color + ", white;" +
+                            "-fx-background-insets: 0, 2;" +
+                            "-fx-background-radius: 5px;" +
+                            "-fx-padding: 5px;"
                     );
 
                     Tooltip tooltip = new Tooltip(
@@ -595,29 +604,27 @@ public class ViewStockDetail extends VBox {
                     Tooltip.install(item.getNode(), tooltip);
 
                     item.getNode().setOnMouseClicked(event -> {
-                        int dataIndex = Integer.parseInt(item.getXValue()) - 1;
-                        int realIndex = stockData.size() - 1 - (dataIndex * step);
-                        if (realIndex >= 0 && realIndex < stockData.size()) {
-                            Stock clickedStock = stockData.get(realIndex);
-                            showPriceDetailDialog(clickedStock, finalPriceType, item.getYValue().doubleValue());
-                        }
+                        Stock clickedStock = (Stock) item.getExtraValue();
+                        showPriceDetailDialog(clickedStock, finalPriceType, item.getYValue().doubleValue());
                     });
 
                     item.getNode().setOnMouseEntered(e -> {
                         item.getNode().setStyle(
-                                "-fx-opacity: 0.8; -fx-cursor: hand; -fx-bar-fill: " + finalColor + ";" +
-                                        "-fx-border-color: #000000;" +
-                                        "-fx-border-width: 2;" +
-                                        "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0, 0, 0);"
+                                "-fx-background-color: " + finalColor + ", white;" +
+                                "-fx-background-insets: 0, 2;" +
+                                "-fx-background-radius: 8px;" +
+                                "-fx-padding: 8px;" +
+                                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0, 0, 0);" +
+                                "-fx-cursor: hand;"
                         );
                     });
 
                     item.getNode().setOnMouseExited(e -> {
                         item.getNode().setStyle(
-                                "-fx-opacity: 1.0; -fx-bar-fill: " + finalColor + ";" +
-                                        "-fx-border-color: black;" +
-                                        "-fx-border-width: 1;" +
-                                        "-fx-effect: null;"
+                                "-fx-background-color: " + finalColor + ", white;" +
+                                "-fx-background-insets: 0, 2;" +
+                                "-fx-background-radius: 5px;" +
+                                "-fx-padding: 5px;"
                         );
                     });
                 }
@@ -714,8 +721,10 @@ public class ViewStockDetail extends VBox {
 
         for (int i = stockData.size() - 1; i >= 0; i -= step) {
             Stock stock = stockData.get(i);
-            String timePointCategory = String.valueOf((stockData.size() - i) / step);
-            volumeSeries.getData().add(new XYChart.Data<>(timePointCategory, stock.getVolume()));
+            String timePointCategory = stock.getShortTimestamp();
+            XYChart.Data<String, Number> volumeData = new XYChart.Data<>(timePointCategory, stock.getVolume());
+            volumeData.setExtraValue(stock);
+            volumeSeries.getData().add(volumeData);
         }
 
         volumeChart.getData().add(volumeSeries);
@@ -727,10 +736,10 @@ public class ViewStockDetail extends VBox {
                 for (XYChart.Data<String, Number> item : series.getData()) {
                     if (item.getNode() != null) {
                         item.getNode().setStyle(
-                                "-fx-bar-fill: #3498db;" +
-                                        "-fx-border-color: black;" +
-                                        "-fx-border-width: 1;" +
-                                        "-fx-background-color: #3498db;"
+                                "-fx-background-color: #3498db, white;" +
+                                "-fx-background-insets: 0, 2;" +
+                                "-fx-background-radius: 5px;" +
+                                "-fx-padding: 5px;"
                         );
                         Tooltip tooltip = new Tooltip(
                                 "Khối lượng: " + Stock.formatVolume(item.getYValue().intValue())

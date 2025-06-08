@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import oop.grp1.Control.DBManager.StockManager;
 
 /**
@@ -33,7 +34,8 @@ public class Stock {
     // Utility for formatting numbers
     private static final DecimalFormat PRICE_FORMAT = new DecimalFormat("#,##0.00");
     private static final DecimalFormat VOLUME_FORMAT = new DecimalFormat("#,###");
-    private static final String DB_URL = "jdbc:sqlite:stockAV.db";
+    private static final Dotenv dotenv = Dotenv.load();
+    private static final String DB_URL = dotenv.get("DB_URL");
 
     // ============ CONSTRUCTORS ============
 
@@ -264,6 +266,20 @@ public class Stock {
      */
     public String getFormattedTimestamp() {
         return formatTimestamp();
+    }
+
+    /**
+     * Get short timestamp for charts
+     * @return formatted timestamp string (HH:mm)
+     */
+    public String getShortTimestamp() {
+        try {
+            // Assuming timestamp format from Alpha Vantage: "2023-12-08 16:00:00"
+            LocalDateTime dateTime = LocalDateTime.parse(timestamp.replace(" ", "T"));
+            return dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+        } catch (Exception e) {
+            return timestamp; // Return original if parsing fails
+        }
     }
 
     /**
@@ -622,11 +638,11 @@ public class Stock {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Stock stock = (Stock) obj;
-        return ticker.equals(stock.ticker) && timestamp.equals(stock.timestamp);
+        return ticker.equals(stock.ticker);
     }
 
     @Override
     public int hashCode() {
-        return ticker.hashCode() + timestamp.hashCode();
+        return ticker.hashCode();
     }
 }

@@ -11,6 +11,7 @@ oop\grp1\Model\ChatResponse.class
 oop\grp1\TestingAlphaVantage.class
 oop\grp1\GUI\TrendingstocksPage.class
 oop\grp1\GUI\WatchList$4.class
+oop\grp1\GUI\CustomTitleBar.class
 oop\grp1\Control\DataFetcher\NewsDF.class
 oop\grp1\GUI\TrendingstocksPage$4.class
 oop\grp1\Model\Stock.class
