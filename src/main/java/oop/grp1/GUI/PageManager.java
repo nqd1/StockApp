@@ -6,6 +6,7 @@ import javafx.scene.layout.StackPane;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class PageManager {
     private static PageManager instance;
     private final Map<String, Node> pages;

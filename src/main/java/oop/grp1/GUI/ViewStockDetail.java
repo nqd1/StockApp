@@ -3,15 +3,20 @@ package oop.grp1.GUI;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import oop.grp1.Model.Stock;
 import javafx.concurrent.Task;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
+import oop.grp1.Model.Stock;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +35,14 @@ public class ViewStockDetail extends VBox {
     private String currentTicker = "";
     private List<Stock> currentStockData;
 
+    // Map để theo dõi trạng thái hiển thị của các series
+    private Map<String, Boolean> seriesVisibility = new HashMap<>();
+
     public ViewStockDetail() {
         this.setSpacing(10);
         this.setPadding(new Insets(15));
         this.setStyle("-fx-background-color: #ffffff; -fx-border-color: #dcdcdc; -fx-border-radius: 10px;");
-        this.setEffect(new javafx.scene.effect.DropShadow(10, Color.GRAY));
+        this.setEffect(new DropShadow(10, Color.GRAY));
 
         Label titleLabel = new Label("Chi Tiết Biến Động Cổ Phiếu");
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
@@ -62,12 +70,14 @@ public class ViewStockDetail extends VBox {
         priceChart = createPriceChart();
         volumeChart = createVolumeChart();
 
-
         chartButtonsBox = createChartButtonsBox();
         chartButtonsBox.setVisible(false);
 
         chartContainer = new VBox(10);
         chartContainer.setVisible(false);
+
+        // Khởi tạo trạng thái hiển thị cho các series
+        initSeriesVisibility();
 
         this.getChildren().addAll(
                 titleLabel,
@@ -81,6 +91,37 @@ public class ViewStockDetail extends VBox {
         );
 
         VBox.setVgrow(chartContainer, Priority.ALWAYS);
+    }
+
+    // Khởi tạo trạng thái hiển thị ban đầu của các series
+    private void initSeriesVisibility() {
+        seriesVisibility.put("Giá Mở Cửa", true);
+        seriesVisibility.put("Giá Đóng Cửa", true);
+        seriesVisibility.put("Giá Cao Nhất", true);
+        seriesVisibility.put("Giá Thấp Nhất", true);
+    }
+
+    private HBox createSearchSection() {
+        searchField = new TextField();
+        searchField.setPromptText("Nhập mã cổ phiếu (VD: AAPL, GOOGL...)");
+        searchField.setFont(Font.font("Arial", 14));
+        searchField.setStyle("-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 5px; -fx-padding: 8px;");
+        searchField.setPrefWidth(300);
+
+        searchButton = new Button("Tìm Kiếm");
+        searchButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        searchButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 8px 16px;");
+        searchButton.setOnMouseEntered(e -> searchButton.setStyle("-fx-background-color: #2980b9; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 8px 16px;"));
+        searchButton.setOnMouseExited(e -> searchButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 8px 16px;"));
+
+        searchButton.setOnAction(e -> searchStock());
+        searchField.setOnAction(e -> searchStock());
+
+        HBox searchBox = new HBox(10);
+        searchBox.setAlignment(Pos.CENTER_LEFT);
+        searchBox.getChildren().addAll(new Label("Mã cổ phiếu:"), searchField, searchButton);
+
+        return searchBox;
     }
 
     private HBox createChartButtonsBox() {
@@ -128,34 +169,9 @@ public class ViewStockDetail extends VBox {
         chartContainer.getChildren().clear();
         updatePriceChart(currentStockData);
         updateVolumeChart(currentStockData);
-
         priceChart.setPrefHeight(250);
         volumeChart.setPrefHeight(150);
-
         chartContainer.getChildren().addAll(priceChart, volumeChart);
-    }
-
-    private HBox createSearchSection() {
-        searchField = new TextField();
-        searchField.setPromptText("Nhập mã cổ phiếu (VD: AAPL, GOOGL...)");
-        searchField.setFont(Font.font("Arial", 14));
-        searchField.setStyle("-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 5px; -fx-padding: 8px;");
-        searchField.setPrefWidth(300);
-
-        searchButton = new Button("Tìm Kiếm");
-        searchButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        searchButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 8px 16px;");
-        searchButton.setOnMouseEntered(e -> searchButton.setStyle("-fx-background-color: #2980b9; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 8px 16px;"));
-        searchButton.setOnMouseExited(e -> searchButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 8px 16px;"));
-
-        searchButton.setOnAction(e -> searchStock());
-        searchField.setOnAction(e -> searchStock());
-
-        HBox searchBox = new HBox(10);
-        searchBox.setAlignment(Pos.CENTER_LEFT);
-        searchBox.getChildren().addAll(new Label("Mã cổ phiếu:"), searchField, searchButton);
-
-        return searchBox;
     }
 
     private VBox createStatisticsPanel() {
@@ -169,17 +185,15 @@ public class ViewStockDetail extends VBox {
         NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Thời gian (Điểm dữ liệu)");
         yAxis.setLabel("Giá ($)");
-
         yAxis.setAutoRanging(false);
 
         BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
         chart.setTitle("Biểu Đồ Biến Động Giá");
         chart.setPrefHeight(250);
         chart.setStyle("-fx-background-color: #ffffff;");
-
         chart.setCategoryGap(1);
         chart.setBarGap(0.5);
-        chart.setStyle("-fx-background-color: #ffffff; -fx-bar-fill: #3498db;");
+        chart.setLegendVisible(true);
 
         return chart;
     }
@@ -189,18 +203,14 @@ public class ViewStockDetail extends VBox {
         NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Thời gian (Điểm dữ liệu)");
         yAxis.setLabel("Khối lượng");
-
-
         yAxis.setAutoRanging(false);
 
         BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
         chart.setTitle("Biểu Đồ Khối Lượng Giao Dịch");
         chart.setPrefHeight(150);
         chart.setStyle("-fx-background-color: #ffffff;");
-
         chart.setCategoryGap(1);
         chart.setBarGap(0.5);
-        chart.setStyle("-fx-background-color: #ffffff; -fx-bar-fill: #3498db;");
 
         return chart;
     }
@@ -211,7 +221,6 @@ public class ViewStockDetail extends VBox {
             showAlert("Vui lòng nhập mã cổ phiếu");
             return;
         }
-
         updateChartByTicker(ticker);
     }
 
@@ -273,7 +282,7 @@ public class ViewStockDetail extends VBox {
 
         updateStockInfo(stockData.get(0));
         updateStatisticsPanel(statistics);
-
+        initSeriesVisibility();
         showBothCharts();
 
         stockInfoLabel.setVisible(true);
@@ -285,17 +294,17 @@ public class ViewStockDetail extends VBox {
 
     private void updateStockInfo(Stock stock) {
         StringBuilder info = new StringBuilder();
-        info.append("📊 ").append(stock.getTicker()).append(" - Thông Tin Mới Nhất\n\n");
-        info.append("💰 Giá Đóng Cửa: ").append(Stock.formatPrice(stock.getClose())).append("\n");
-        info.append("📈 Giá Mở Cửa: ").append(Stock.formatPrice(stock.getOpen())).append("\n");
+        info.append(" ").append(stock.getTicker()).append(" - Thông Tin Mới Nhất\n\n");
+        info.append(" Giá Đóng Cửa: ").append(Stock.formatPrice(stock.getClose())).append("\n");
+        info.append(" Giá Mở Cửa: ").append(Stock.formatPrice(stock.getOpen())).append("\n");
         info.append("⬆️ Giá Cao Nhất: ").append(Stock.formatPrice(stock.getHigh())).append("\n");
         info.append("⬇️ Giá Thấp Nhất: ").append(Stock.formatPrice(stock.getLow())).append("\n");
-        info.append("📊 Khối Lượng: ").append(Stock.formatVolume(stock.getVolume())).append("\n");
-        info.append("📊 Thay Đổi: ").append(stock.getFormattedPercentageChange())
+        info.append(" Khối Lượng: ").append(Stock.formatVolume(stock.getVolume())).append("\n");
+        info.append(" Thay Đổi: ").append(stock.getFormattedPercentageChange())
                 .append(" (").append(stock.getFormattedPriceChange()).append(")\n");
-        info.append("🎯 Xu Hướng: ").append(stock.getMarketSentiment()).append("\n");
+        info.append(" Xu Hướng: ").append(stock.getMarketSentiment()).append("\n");
         info.append("⚡ Độ Biến Động: ").append(String.format("%.2f%%", stock.getVolatility())).append("\n");
-        info.append("🕒 Cập Nhật: ").append(stock.getFormattedTimestamp());
+        info.append(" Cập Nhật: ").append(stock.getFormattedTimestamp());
 
         stockInfoLabel.setText(info.toString());
         stockInfoLabel.setStyle("-fx-text-fill: #2c3e50; -fx-padding: 15px; -fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 8px;");
@@ -304,7 +313,7 @@ public class ViewStockDetail extends VBox {
     private void updateStatisticsPanel(Map<String, Object> statistics) {
         statisticsPanel.getChildren().clear();
 
-        Label statsTitle = new Label("📈 Thống Kê Tổng Quan");
+        Label statsTitle = new Label(" Thống Kê Tổng Quan");
         statsTitle.setFont(Font.font("Arial", FontWeight.BOLD, 16));
         statsTitle.setStyle("-fx-text-fill: #2c3e50;");
 
@@ -339,7 +348,6 @@ public class ViewStockDetail extends VBox {
         grid.add(container, col, row);
     }
 
-
     private void setPriceChartYAxisRange(List<Stock> stockData) {
         if (stockData == null || stockData.isEmpty()) return;
 
@@ -352,12 +360,10 @@ public class ViewStockDetail extends VBox {
 
         for (int i = stockData.size() - 1; i >= 0; i -= step) {
             Stock stock = stockData.get(i);
-
             minPrice = Math.min(minPrice, stock.getOpen());
             minPrice = Math.min(minPrice, stock.getClose());
             minPrice = Math.min(minPrice, stock.getHigh());
             minPrice = Math.min(minPrice, stock.getLow());
-
             maxPrice = Math.max(maxPrice, stock.getOpen());
             maxPrice = Math.max(maxPrice, stock.getClose());
             maxPrice = Math.max(maxPrice, stock.getHigh());
@@ -370,16 +376,12 @@ public class ViewStockDetail extends VBox {
         double lowerBound = Math.max(0, minPrice - buffer);
         double upperBound = maxPrice + buffer;
 
-
         NumberAxis yAxis = (NumberAxis) priceChart.getYAxis();
         yAxis.setLowerBound(lowerBound);
         yAxis.setUpperBound(upperBound);
-
-
         double tickUnit = priceRange / 8;
         yAxis.setTickUnit(tickUnit);
     }
-
 
     private void setVolumeChartYAxisRange(List<Stock> stockData) {
         if (stockData == null || stockData.isEmpty()) return;
@@ -387,18 +389,15 @@ public class ViewStockDetail extends VBox {
         long minVolume = Long.MAX_VALUE;
         long maxVolume = Long.MIN_VALUE;
 
-
         int maxDataPoints = Math.min(12, stockData.size());
         int step = stockData.size() / maxDataPoints;
         if (step < 1) step = 1;
-
 
         for (int i = stockData.size() - 1; i >= 0; i -= step) {
             Stock stock = stockData.get(i);
             minVolume = Math.min(minVolume, stock.getVolume());
             maxVolume = Math.max(maxVolume, stock.getVolume());
         }
-
 
         long volumeRange = maxVolume - minVolume;
         long buffer = (long) (volumeRange * 0.1);
@@ -409,17 +408,15 @@ public class ViewStockDetail extends VBox {
         NumberAxis yAxis = (NumberAxis) volumeChart.getYAxis();
         yAxis.setLowerBound(lowerBound);
         yAxis.setUpperBound(upperBound);
-
-
         double tickUnit = (double) volumeRange / 6;
         yAxis.setTickUnit(tickUnit);
     }
 
     private void updatePriceChart(List<Stock> stockData) {
         priceChart.getData().clear();
-
-
         setPriceChartYAxisRange(stockData);
+
+        if (stockData == null || stockData.isEmpty()) return;
 
         int maxDataPoints = Math.min(12, stockData.size());
         int step = stockData.size() / maxDataPoints;
@@ -446,41 +443,267 @@ public class ViewStockDetail extends VBox {
             lowSeries.getData().add(new XYChart.Data<>(timePointCategory, stock.getLow()));
         }
 
-        priceChart.getData().addAll(openSeries, closeSeries, highSeries, lowSeries);
+        // Thêm series dựa vào trạng thái hiển thị
+        if (seriesVisibility.get("Giá Mở Cửa")) {
+            priceChart.getData().add(openSeries);
+        }
+        if (seriesVisibility.get("Giá Đóng Cửa")) {
+            priceChart.getData().add(closeSeries);
+        }
+        if (seriesVisibility.get("Giá Cao Nhất")) {
+            priceChart.getData().add(highSeries);
+        }
+        if (seriesVisibility.get("Giá Thấp Nhất")) {
+            priceChart.getData().add(lowSeries);
+        }
+
         priceChart.setTitle("Biểu Đồ Biến Động Giá - " + currentTicker);
 
+        final int finalStep = step;
         Platform.runLater(() -> {
-            for (int i = 0; i < priceChart.getData().size(); i++) {
-                XYChart.Series<String, Number> series = priceChart.getData().get(i);
-                String color;
+            setupBarDataEvents(stockData, finalStep);
+            setupLegendClickEvent();
+        });
+    }
 
-                switch (i) {
-                    case 0: color = "#3498db"; break; // Open - xanh dương
-                    case 1: color = "#2ecc71"; break; // Close - xanh lá
-                    case 2: color = "#f39c12"; break; // High - cam
-                    case 3: color = "#e74c3c"; break; // Low - đỏ
-                    default: color = "#9b59b6"; break;
-                }
+    // Thiết lập sự kiện click cho legend
+    private void setupLegendClickEvent() {
+        for (Node node : priceChart.lookupAll(".chart-legend-item")) {
+            if (node instanceof Label) {
+                Label legendItem = (Label) node;
+                String seriesName = legendItem.getText();
 
-                for (XYChart.Data<String, Number> item : series.getData()) {
-                    if (item.getNode() != null) {
+                // Thiết lập tooltip để hướng dẫn người dùng
+                Tooltip.install(legendItem, new Tooltip("Nhấp để xem riêng " + seriesName + ", nhấp lại để xem tất cả"));
+
+                // Cập nhật giao diện để phản ánh trạng thái hiện tại
+                updateLegendStyle(legendItem, seriesVisibility.getOrDefault(seriesName, false));
+
+                // Thiết lập sự kiện click
+                legendItem.setOnMouseClicked(event -> {
+                    boolean allVisible = seriesVisibility.get("Giá Mở Cửa") &&
+                            seriesVisibility.get("Giá Đóng Cửa") &&
+                            seriesVisibility.get("Giá Cao Nhất") &&
+                            seriesVisibility.get("Giá Thấp Nhất");
+
+                    if (allVisible) {
+                        // Nếu tất cả đang hiển thị, nhấp để hiển thị riêng series được chọn
+                        seriesVisibility.keySet().forEach(key -> seriesVisibility.put(key, false));
+                        seriesVisibility.put(seriesName, true);
+                    } else if (seriesVisibility.get(seriesName)) {
+                        // Nếu series đã được chọn, nhấp lại để hiển thị tất cả
+                        initSeriesVisibility();
+                    } else {
+                        // Hiển thị riêng series được nhấp
+                        seriesVisibility.keySet().forEach(key -> seriesVisibility.put(key, false));
+                        seriesVisibility.put(seriesName, true);
+                    }
+
+                    // Vẽ lại biểu đồ
+                    updatePriceChart(currentStockData);
+                });
+
+                // Thiết lập hiệu ứng hover
+                legendItem.setOnMouseEntered(e -> {
+                    legendItem.setCursor(javafx.scene.Cursor.HAND);
+                    legendItem.setStyle(legendItem.getStyle() + "; -fx-underline: true; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 2, 0, 0, 0)");
+                });
+
+                legendItem.setOnMouseExited(e -> {
+                    legendItem.setCursor(javafx.scene.Cursor.DEFAULT);
+                    updateLegendStyle(legendItem, seriesVisibility.getOrDefault(seriesName, false));
+                });
+            }
+        }
+    }
+
+    // Cập nhật style của legend item dựa vào trạng thái hiển thị
+    private void updateLegendStyle(Label legendItem, boolean visible) {
+        String seriesName = legendItem.getText();
+        String color;
+
+        switch (seriesName) {
+            case "Giá Mở Cửa":
+                color = "#e74c3c"; // Đỏ
+                break;
+            case "Giá Đóng Cửa":
+                color = "#f39c12"; // Cam
+                break;
+            case "Giá Cao Nhất":
+                color = "#2ecc71"; // Xanh lá
+                break;
+            case "Giá Thấp Nhất":
+                color = "#3498db"; // Xanh dương
+                break;
+            default:
+                color = "#9b59b6";
+                break;
+        }
+
+        if (visible) {
+            legendItem.setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
+        } else {
+            legendItem.setStyle("-fx-text-fill: #a0a0a0; -fx-font-weight: normal;");
+        }
+    }
+
+    // Thiết lập sự kiện cho các cột dữ liệu
+    private void setupBarDataEvents(List<Stock> stockData, int step) {
+        for (int i = 0; i < priceChart.getData().size(); i++) {
+            XYChart.Series<String, Number> series = priceChart.getData().get(i);
+            String color;
+            String priceType;
+
+            switch (series.getName()) {
+                case "Giá Mở Cửa":
+                    color = "#e74c3c"; // Đỏ
+                    priceType = "Giá Mở Cửa";
+                    break;
+                case "Giá Đóng Cửa":
+                    color = "#f39c12"; // Cam
+                    priceType = "Giá Đóng Cửa";
+                    break;
+                case "Giá Cao Nhất":
+                    color = "#2ecc71"; // Xanh lá
+                    priceType = "Giá Cao Nhất";
+                    break;
+                case "Giá Thấp Nhất":
+                    color = "#3498db"; // Xanh dương
+                    priceType = "Giá Thấp Nhất";
+                    break;
+                default:
+                    color = "#9b59b6";
+                    priceType = "Giá";
+                    break;
+            }
+
+            final String finalPriceType = priceType;
+            final String finalColor = color;
+
+            for (XYChart.Data<String, Number> item : series.getData()) {
+                if (item.getNode() != null) {
+                    item.getNode().setStyle(
+                            "-fx-bar-fill: " + color + ";" +
+                                    "-fx-border-color: black;" +
+                                    "-fx-border-width: 1;" +
+                                    "-fx-background-color: " + color + ";"
+                    );
+
+                    Tooltip tooltip = new Tooltip(
+                            finalPriceType + ": " + Stock.formatPrice(item.getYValue().doubleValue())
+                    );
+                    Tooltip.install(item.getNode(), tooltip);
+
+                    item.getNode().setOnMouseClicked(event -> {
+                        int dataIndex = Integer.parseInt(item.getXValue()) - 1;
+                        int realIndex = stockData.size() - 1 - (dataIndex * step);
+                        if (realIndex >= 0 && realIndex < stockData.size()) {
+                            Stock clickedStock = stockData.get(realIndex);
+                            showPriceDetailDialog(clickedStock, finalPriceType, item.getYValue().doubleValue());
+                        }
+                    });
+
+                    item.getNode().setOnMouseEntered(e -> {
                         item.getNode().setStyle(
-                                "-fx-bar-fill: " + color + ";" +
+                                "-fx-opacity: 0.8; -fx-cursor: hand; -fx-bar-fill: " + finalColor + ";" +
+                                        "-fx-border-color: #000000;" +
+                                        "-fx-border-width: 2;" +
+                                        "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0, 0, 0);"
+                        );
+                    });
+
+                    item.getNode().setOnMouseExited(e -> {
+                        item.getNode().setStyle(
+                                "-fx-opacity: 1.0; -fx-bar-fill: " + finalColor + ";" +
                                         "-fx-border-color: black;" +
                                         "-fx-border-width: 1;" +
-                                        "-fx-background-color: " + color + ";"
+                                        "-fx-effect: null;"
                         );
-                    }
+                    });
                 }
             }
-        });
+        }
+    }
+
+    private void showPriceDetailDialog(Stock stock, String priceType, double priceValue) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Chi Tiết " + priceType);
+        alert.setHeaderText(currentTicker + " - " + priceType);
+
+        StringBuilder content = new StringBuilder();
+        content.append(priceType).append(": ").append(Stock.formatPrice(priceValue)).append("\n\n");
+        content.append("Ngày: ").append(stock.getFormattedTimestamp()).append("\n\n");
+
+        switch (priceType) {
+            case "Giá Mở Cửa":
+                content.append("So với Giá Đóng Cửa: ").append(compareValues(priceValue, stock.getClose())).append("\n");
+                content.append("So với Giá Cao Nhất: ").append(compareValues(priceValue, stock.getHigh())).append("\n");
+                content.append("So với Giá Thấp Nhất: ").append(compareValues(priceValue, stock.getLow())).append("\n");
+                break;
+            case "Giá Đóng Cửa":
+                content.append("So với Giá Mở Cửa: ").append(compareValues(priceValue, stock.getOpen())).append("\n");
+                content.append("So với Giá Cao Nhất: ").append(compareValues(priceValue, stock.getHigh())).append("\n");
+                content.append("So với Giá Thấp Nhất: ").append(compareValues(priceValue, stock.getLow())).append("\n");
+                break;
+            case "Giá Cao Nhất":
+                content.append("So với Giá Mở Cửa: ").append(compareValues(priceValue, stock.getOpen())).append("\n");
+                content.append("So với Giá Đóng Cửa: ").append(compareValues(priceValue, stock.getClose())).append("\n");
+                content.append("So với Giá Thấp Nhất: ").append(compareValues(priceValue, stock.getLow())).append("\n");
+                break;
+            case "Giá Thấp Nhất":
+                content.append("So với Giá Mở Cửa: ").append(compareValues(priceValue, stock.getOpen())).append("\n");
+                content.append("So với Giá Đóng Cửa: ").append(compareValues(priceValue, stock.getClose())).append("\n");
+                content.append("So với Giá Cao Nhất: ").append(compareValues(priceValue, stock.getHigh())).append("\n");
+                break;
+        }
+
+        if (priceType.equals("Giá Mở Cửa") || priceType.equals("Giá Đóng Cửa")) {
+            content.append("\nPhân tích phiên giao dịch: ");
+            if (stock.getOpen() < stock.getClose()) {
+                content.append("Phiên tăng điểm ").append(Stock.formatPrice(stock.getClose() - stock.getOpen()));
+                content.append(" (").append(String.format("%.2f%%", (stock.getClose() - stock.getOpen()) / stock.getOpen() * 100)).append(")");
+            } else if (stock.getOpen() > stock.getClose()) {
+                content.append("Phiên giảm điểm ").append(Stock.formatPrice(stock.getOpen() - stock.getClose()));
+                content.append(" (").append(String.format("%.2f%%", (stock.getOpen() - stock.getClose()) / stock.getOpen() * 100)).append(")");
+            } else {
+                content.append("Phiên giao dịch đi ngang");
+            }
+        }
+
+        content.append("\n\nKhối lượng giao dịch: ").append(Stock.formatVolume(stock.getVolume()));
+
+        if (priceType.equals("Giá Cao Nhất") || priceType.equals("Giá Thấp Nhất")) {
+            double tradingRange = stock.getHigh() - stock.getLow();
+            double percentRange = (stock.getLow() != 0) ? (tradingRange / stock.getLow() * 100) : 0;
+            content.append("\nBiên độ giao dịch: ").append(Stock.formatPrice(tradingRange));
+            content.append(" (").append(String.format("%.2f%%", percentRange)).append(")");
+        }
+
+        alert.setContentText(content.toString());
+        alert.showAndWait();
+    }
+
+    private String compareValues(double value1, double value2) {
+        double difference = value1 - value2;
+        double percentageDiff = (value2 != 0) ? (difference / value2) * 100 : 0;
+
+        String result = Stock.formatPrice(Math.abs(difference));
+        if (difference > 0) {
+            result += String.format(" cao hơn (%.2f%%)", percentageDiff);
+        } else if (difference < 0) {
+            result += String.format(" thấp hơn (%.2f%%)", Math.abs(percentageDiff));
+        } else {
+            result += " (bằng nhau)";
+        }
+
+        return result;
     }
 
     private void updateVolumeChart(List<Stock> stockData) {
         volumeChart.getData().clear();
-
-
         setVolumeChartYAxisRange(stockData);
+
+        if (stockData == null || stockData.isEmpty()) return;
 
         int maxDataPoints = Math.min(12, stockData.size());
         int step = stockData.size() / maxDataPoints;
@@ -501,7 +724,6 @@ public class ViewStockDetail extends VBox {
         Platform.runLater(() -> {
             if (!volumeChart.getData().isEmpty()) {
                 XYChart.Series<String, Number> series = volumeChart.getData().get(0);
-
                 for (XYChart.Data<String, Number> item : series.getData()) {
                     if (item.getNode() != null) {
                         item.getNode().setStyle(
@@ -510,6 +732,10 @@ public class ViewStockDetail extends VBox {
                                         "-fx-border-width: 1;" +
                                         "-fx-background-color: #3498db;"
                         );
+                        Tooltip tooltip = new Tooltip(
+                                "Khối lượng: " + Stock.formatVolume(item.getYValue().intValue())
+                        );
+                        Tooltip.install(item.getNode(), tooltip);
                     }
                 }
             }
@@ -532,7 +758,6 @@ public class ViewStockDetail extends VBox {
         hideComponents();
         noDataLabel.setText("Không tìm thấy dữ liệu cho mã cổ phiếu: " + currentTicker);
         noDataLabel.setVisible(true);
-
         stockInfoLabel.setText("Vui lòng thử lại với mã cổ phiếu khác");
         stockInfoLabel.setStyle("-fx-text-fill: #e74c3c; -fx-padding: 10px;");
         stockInfoLabel.setVisible(true);
