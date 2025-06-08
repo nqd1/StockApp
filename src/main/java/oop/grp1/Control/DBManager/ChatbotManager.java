@@ -7,13 +7,15 @@ import java.util.List;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import oop.grp1.Model.ChatResponse;
 
 public class ChatbotManager extends DBManager {
-    private static final String dbUrl = "jdbc:sqlite:stockAV.db";
+    private static final Dotenv dotenv = Dotenv.load();
+    private static final String DB_URL = dotenv.get("DB_URL");
 
     public ChatbotManager() {
-        super(dbUrl); 
+        super(DB_URL); 
         initializeDatabase();
     }
 

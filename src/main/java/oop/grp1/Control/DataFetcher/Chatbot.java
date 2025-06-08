@@ -23,7 +23,8 @@ public class Chatbot {
     private final ObjectMapper objectMapper;
     private final ChatbotManager chatbotManager;
     private String session;
-    private static final String DB_URL = "jdbc:sqlite:stockAV.db";
+    private static final Dotenv dotenv = Dotenv.load();
+    private static final String DB_URL = dotenv.get("DB_URL");
 
     public Chatbot() {
         Dotenv dotenv = Dotenv.load();

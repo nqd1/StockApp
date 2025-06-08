@@ -1,13 +1,16 @@
 package oop.grp1.Control.DBManager;
 
 import com.google.gson.*;
+
+import io.github.cdimascio.dotenv.Dotenv;
+
 import java.sql.*;
 import oop.grp1.Control.DataFetcher.NewsDF;
 import oop.grp1.Control.JsonBeautifier;
 
 public class NewsManager extends DBManager {
-    private static final String DB_URL = "jdbc:sqlite:stockAV.db";
-
+    private static final Dotenv dotenv = Dotenv.load();
+    private static final String DB_URL = dotenv.get("DB_URL");
     public NewsManager() {
         super(DB_URL);
     }

@@ -9,10 +9,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.layout.Priority;
+import oop.grp1.Model.Stock;
 
 public class WatchList extends VBox {
-    private final TableView<StockDetail.StockWithInterest> watchListTable;
-    static final ObservableList<StockDetail.StockWithInterest> watchListStocks = FXCollections.observableArrayList();
+    private final TableView<Stock> watchListTable;
+    static final ObservableList<Stock> watchListStocks = FXCollections.observableArrayList();
 
     public WatchList() {
         Label titleLabel = new Label("Danh Sách Theo Dõi");
@@ -25,16 +26,15 @@ public class WatchList extends VBox {
         watchListTable.setEditable(true);
         watchListTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        TableColumn<Stock, String> ticColumn = new TableColumn<>("tic");
+        ticColumn.setCellValueFactory(new PropertyValueFactory<>("ticker"));
 
-        TableColumn<StockDetail.StockWithInterest, String> ticColumn = new TableColumn<>("tic");
-        ticColumn.setCellValueFactory(new PropertyValueFactory<>("stockCode"));
-
-        TableColumn<StockDetail.StockWithInterest, Long> volumeColumn = new TableColumn<>("volume");
+        TableColumn<Stock, Integer> volumeColumn = new TableColumn<>("volume");
         volumeColumn.setCellValueFactory(new PropertyValueFactory<>("volume"));
 
-        TableColumn<StockDetail.StockWithInterest, Double> openColumn = new TableColumn<>("open");
-        openColumn.setCellValueFactory(new PropertyValueFactory<>("openPrice"));
-        openColumn.setCellFactory(column -> new TableCell<StockDetail.StockWithInterest, Double>() {
+        TableColumn<Stock, Double> openColumn = new TableColumn<>("open");
+        openColumn.setCellValueFactory(new PropertyValueFactory<>("open"));
+        openColumn.setCellFactory(column -> new TableCell<Stock, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
@@ -46,9 +46,9 @@ public class WatchList extends VBox {
             }
         });
 
-        TableColumn<StockDetail.StockWithInterest, Double> closeColumn = new TableColumn<>("close");
-        closeColumn.setCellValueFactory(new PropertyValueFactory<>("closePrice"));
-        closeColumn.setCellFactory(column -> new TableCell<StockDetail.StockWithInterest, Double>() {
+        TableColumn<Stock, Double> closeColumn = new TableColumn<>("close");
+        closeColumn.setCellValueFactory(new PropertyValueFactory<>("close"));
+        closeColumn.setCellFactory(column -> new TableCell<Stock, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
@@ -60,9 +60,9 @@ public class WatchList extends VBox {
             }
         });
 
-        TableColumn<StockDetail.StockWithInterest, Double> highColumn = new TableColumn<>("high");
-        highColumn.setCellValueFactory(new PropertyValueFactory<>("highPrice"));
-        highColumn.setCellFactory(column -> new TableCell<StockDetail.StockWithInterest, Double>() {
+        TableColumn<Stock, Double> highColumn = new TableColumn<>("high");
+        highColumn.setCellValueFactory(new PropertyValueFactory<>("high"));
+        highColumn.setCellFactory(column -> new TableCell<Stock, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
@@ -74,9 +74,9 @@ public class WatchList extends VBox {
             }
         });
 
-        TableColumn<StockDetail.StockWithInterest, Double> lowColumn = new TableColumn<>("low");
-        lowColumn.setCellValueFactory(new PropertyValueFactory<>("lowPrice"));
-        lowColumn.setCellFactory(column -> new TableCell<StockDetail.StockWithInterest, Double>() {
+        TableColumn<Stock, Double> lowColumn = new TableColumn<>("low");
+        lowColumn.setCellValueFactory(new PropertyValueFactory<>("low"));
+        lowColumn.setCellFactory(column -> new TableCell<Stock, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
@@ -88,8 +88,8 @@ public class WatchList extends VBox {
             }
         });
 
-        TableColumn<StockDetail.StockWithInterest, String> changeColumn = new TableColumn<>("Change");
-        changeColumn.setCellValueFactory(cellData -> new javafx.beans.property.ReadOnlyStringWrapper(cellData.getValue().getChange()));
+        TableColumn<Stock, String> changeColumn = new TableColumn<>("Change");
+        changeColumn.setCellValueFactory(cellData -> new javafx.beans.property.ReadOnlyStringWrapper(cellData.getValue().getFormattedPercentageChange()));
 
         watchListTable.getColumns().addAll(ticColumn, volumeColumn, openColumn, closeColumn, highColumn, lowColumn, changeColumn);
         watchListTable.setItems(watchListStocks);
@@ -101,17 +101,17 @@ public class WatchList extends VBox {
         this.setEffect(new javafx.scene.effect.DropShadow(10, Color.GRAY));
         VBox.setVgrow(watchListTable, Priority.ALWAYS);
 
-        watchListStocks.addListener((javafx.collections.ListChangeListener<StockDetail.StockWithInterest>) change -> {
+        watchListStocks.addListener((javafx.collections.ListChangeListener<Stock>) change -> {
             watchListTable.refresh();
             System.out.println("watchListStocks updated: " + watchListStocks);
         });
     }
 
-    public TableView<StockDetail.StockWithInterest> getWatchListView() {
+    public TableView<Stock> getWatchListView() {
         return watchListTable;
     }
 
-    public static void addToWatchList(StockDetail.StockWithInterest stock) {
+    public static void addToWatchList(Stock stock) {
         if (stock != null && !watchListStocks.contains(stock)) {
             watchListStocks.add(stock);
             System.out.println("Added to watchListStocks: " + stock);
@@ -120,12 +120,12 @@ public class WatchList extends VBox {
         }
     }
 
-    public static void removeFromWatchList(StockDetail.StockWithInterest stock) {
+    public static void removeFromWatchList(Stock stock) {
         watchListStocks.remove(stock);
         System.out.println("Removed from watchListStocks: " + stock);
     }
 
-    public static ObservableList<StockDetail.StockWithInterest> getWatchListStocks() {
+    public static ObservableList<Stock> getWatchListStocks() {
         return watchListStocks;
     }
 }

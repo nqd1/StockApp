@@ -2,6 +2,7 @@ package oop.grp1.Control.DBManager;
 
 import com.google.gson.*;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import oop.grp1.Control.JsonBeautifier;
 import oop.grp1.Control.DataFetcher.StockDF;
 
@@ -9,7 +10,8 @@ import java.sql.*;
 import java.util.*;
 
 public class StockManager extends DBManager {
-    private static final String DB_URL = "jdbc:sqlite:stockAV.db";
+    private static final Dotenv dotenv = Dotenv.load();
+    private static final String DB_URL = dotenv.get("DB_URL");
 
     public StockManager() {
         super(DB_URL);
