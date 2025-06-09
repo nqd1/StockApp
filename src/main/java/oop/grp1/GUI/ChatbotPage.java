@@ -75,7 +75,7 @@ public class ChatbotPage extends VBox {
         this.getChildren().addAll(scrollPane, inputLayout);
         this.setSpacing(10);
         this.setPadding(new Insets(15));
-        this.setStyle("-fx-background-color: #ffffff; -fx-border-color: #dcdcdc; -fx-border-radius: 10px;");
+        this.getStyleClass().add("page-background");
 
         DropShadow shadow = new DropShadow();
         shadow.setColor(Color.GRAY);

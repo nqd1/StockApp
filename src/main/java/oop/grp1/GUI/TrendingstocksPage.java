@@ -26,6 +26,8 @@ public class TrendingstocksPage extends VBox {
     private final TableView<StockChangeData> topThayDoiTable;
 
     public TrendingstocksPage() {
+        this.getStyleClass().add("page-background");
+
         // Header với tiêu đề và nút làm mới
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);

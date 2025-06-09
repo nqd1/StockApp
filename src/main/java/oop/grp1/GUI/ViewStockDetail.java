@@ -39,9 +39,9 @@ public class ViewStockDetail extends VBox {
     private Map<String, Boolean> seriesVisibility = new HashMap<>();
 
     public ViewStockDetail() {
+        this.getStyleClass().add("page-background");
         this.setSpacing(10);
         this.setPadding(new Insets(15));
-        this.setStyle("-fx-background-color: #ffffff; -fx-border-color: #dcdcdc; -fx-border-radius: 10px;");
         this.setEffect(new DropShadow(10, Color.GRAY));
 
         Label titleLabel = new Label("Chi Tiết Biến Động Cổ Phiếu");
@@ -50,7 +50,7 @@ public class ViewStockDetail extends VBox {
 
         HBox searchBox = createSearchSection();
 
-        stockInfoLabel = new Label("Nhập mã cổ phiếu để xem thông tin chi tiết");
+        stockInfoLabel = new Label("");
         stockInfoLabel.setFont(Font.font("Arial", 14));
         stockInfoLabel.setStyle("-fx-text-fill: #7f8c8d; -fx-padding: 10px;");
         stockInfoLabel.setWrapText(true);

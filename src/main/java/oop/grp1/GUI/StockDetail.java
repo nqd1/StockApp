@@ -178,7 +178,7 @@ public class StockDetail extends VBox {
         stockTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         stockTable.setStyle("-fx-border-color: #dcdcdc; -fx-border-radius: 5px;");
         this.setPadding(new Insets(15));
-        this.setStyle("-fx-background-color: #ffffff; -fx-border-color: #dcdcdc; -fx-border-radius: 10px;");
+        this.getStyleClass().add("page-background");
         this.getChildren().add(stockTable);
         this.setEffect(new javafx.scene.effect.DropShadow(10, Color.GRAY));
         VBox.setVgrow(stockTable, javafx.scene.layout.Priority.ALWAYS);

@@ -75,6 +75,15 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 15, 0, 0, 5);
 }
 
+/* Page background with an image */
+.page-background {
+    -fx-background-image: url("/images/bg.png");
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
 /* Tùy chỉnh cho TableView với độ trong suốt */
 .table-view {
     -fx-background-color: rgba(255, 255, 255, 0.95);
@@ -186,8 +195,8 @@
     -fx-background-radius: 8;
 }
 
-/* Special styling for main content panels */
-.vbox:not(.sidebar):not(.custom-title-bar) {
+/* Special styling for main content panels, but not for pages with a background image */
+.vbox:not(.sidebar):not(.custom-title-bar):not(.page-background) {
     -fx-background-color: rgba(255, 255, 255, 0.92);
     -fx-background-radius: 8;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 8, 0, 0, 3);

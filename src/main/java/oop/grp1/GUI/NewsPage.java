@@ -35,9 +35,9 @@ public class NewsPage extends VBox {
     private int displayedNewsCount = 0;
     
     public NewsPage() {
+        this.getStyleClass().add("page-background");
         this.setPadding(new Insets(15));
         this.setSpacing(15);
-        this.setStyle("-fx-background-color: #f5f5f5;");
         
         // Tạo phần header với tiêu đề
         Label titleLabel = new Label("Tin tức thị trường");
