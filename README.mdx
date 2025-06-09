@@ -29,41 +29,25 @@ Dự án này được xây dựng nhằm giải quyết các vấn đề trên 
 
 ### 1.1. Sơ Lược Về Dự Án
 
-Đây là một ứng dụng Desktop được xây dựng hoàn toàn bằng Java và JavaFX, tuân thủ chặt chẽ các nguyên tắc của Lập trình Hướng đối tượng (OOP). Dự án được cấu trúc theo kiến trúc 3 lớp (3-Tier Architecture) rõ ràng, giúp mã nguồn trở nên dễ bảo trì, mở rộng và kiểm thử.
+Đây là một ứng dụng Desktop được xây dựng hoàn toàn bằng Java và JavaFX, tuân thủ chặt chẽ các nguyên tắc của Lập trình Hướng đối tượng (OOP). Dự án được cấu trúc theo mô hình kiến trúc **Model-View-Controller (MVC)**, giúp mã nguồn trở nên dễ bảo trì, mở rộng và kiểm thử.
 
 ### 1.2. Các Lớp Chính Trong Dự Án
 
-Dự án được tổ chức thành các package có chức năng riêng biệt:
+Dự án được tổ chức thành các package có chức năng riêng biệt, tương ứng với các thành phần của MVC:
 
-- **`oop.grp1.GUI` (Tầng Giao Diện - Presentation Layer):**
-  - `Main.java`: Điểm khởi đầu của ứng dụng, chịu trách nhiệm khởi tạo cửa sổ chính (Stage) và Scene.
-  - `MainLayout.java`: Lớp layout chính của ứng dụng (sử dụng BorderPane), sắp xếp `CustomTitleBar`, `Sidebar`, và `contentArea`.
-  - `CustomTitleBar.java`: Tạo ra một thanh tiêu đề tùy chỉnh với các chức năng kéo thả, đóng, thu nhỏ, phóng to.
-  - `Sidebar.java`: Thanh điều hướng bên trái, cho phép chuyển đổi giữa các trang khác nhau.
-  - `PageManager.java`: Quản lý việc hiển thị và chuyển đổi giữa các trang (sử dụng **Singleton Pattern**).
-  - `TrendingstocksPage.java`: Trang hiển thị các bảng xếp hạng cổ phiếu.
-  - `NewsPage.java`: Trang hiển thị và tìm kiếm tin tức thị trường.
-  - `StockDetail.java`: Trang hiển thị danh sách tất cả cổ phiếu và cho phép người dùng quản lý Watchlist.
-  - `ViewStockDetail.java`: Trang hiển thị biểu đồ chi tiết về giá và khối lượng giao dịch của một cổ phiếu cụ thể.
-  - `ChatbotPage.java`: Giao diện tương tác với trợ lý AI Chatbot.
-  - `WatchList.java`: Lớp tĩnh quản lý trạng thái của danh sách theo dõi.
-  - `MarkdownUtils.java`: Lớp tiện ích chuyển đổi văn bản Markdown từ Chatbot thành HTML để hiển thị.
+- **`oop.grp1.GUI` (View):**
+  - Chịu trách nhiệm hiển thị giao diện người dùng (UI) và nhận tương tác từ người dùng.
+  - `Main.java`, `MainLayout.java`, `TrendingstocksPage.java`, `NewsPage.java`, `StockDetail.java`, `ViewStockDetail.java`, `ChatbotPage.java`, và các lớp giao diện khác.
 
-- **`oop.grp1.Control` (Tầng Điều Khiển - Business Logic Layer):**
-  - **`DataFetcher` Package:**
-    - `DFAbstract.java`: Lớp trừu tượng định nghĩa phương thức `fetch`, áp dụng **Abstraction** để ẩn đi chi tiết việc lấy dữ liệu.
-    - `StockDF.java`: Lớp con thực thi việc lấy dữ liệu giá cổ phiếu từ Alpha Vantage.
-    - `NewsDF.java`: Lớp con thực thi việc lấy dữ liệu tin tức từ Alpha Vantage.
-    - `Chatbot.java`: Lớp chịu trách nhiệm giao tiếp với Google Gemini API.
-  - **`DBManager` Package (DAO Pattern):**
-    - `DBManager.java`: Lớp cha quản lý kết nối và các thao tác cơ bản với cơ sở dữ liệu SQLite.
-    - `StockManager.java`, `NewsManager.java`, `ChatbotManager.java`: Các lớp con chuyên biệt cho việc xử lý dữ liệu của từng Model.
-  - `JsonBeautifier.java`: Lớp tiện ích giúp định dạng chuỗi JSON.
+- **`oop.grp1.Control` (Controller):**
+  - Đóng vai trò trung gian, xử lý logic nghiệp vụ, nhận yêu cầu từ View và cập nhật Model.
+  - **`DataFetcher` Package:** Các lớp `StockDF`, `NewsDF` lấy dữ liệu từ API.
+  - **`DBManager` Package (DAO):** Các lớp `*Manager` xử lý các thao tác với cơ sở dữ liệu.
+  - `Chatbot.java`: Xử lý logic cho chatbot.
 
-- **`oop.grp1.Model` (Tầng Dữ Liệu - Data Layer):**
-  - `Stock.java`: Đại diện cho một điểm dữ liệu của cổ phiếu tại một thời điểm (giá mở, đóng, cao, thấp, khối lượng).
-  - `News.java`: Đại diện cho một bản tin tức, bao gồm tiêu đề, tóm tắt, nguồn, và phân tích cảm xúc.
-  - `ChatResponse.java`: Đại diện cho một phản hồi từ Chatbot, lưu trữ nội dung và các thông tin liên quan.
+- **`oop.grp1.Model` (Model):**
+  - Đại diện cho cấu trúc dữ liệu của ứng dụng.
+  - `Stock.java`, `News.java`, `ChatResponse.java`: Các lớp định nghĩa đối tượng dữ liệu.
 
 ### 1.3. Các Yếu Tố Hướng Đối Tượng Trong Dự Án
 
@@ -81,10 +65,10 @@ Dự án được tổ chức thành các package có chức năng riêng biệt
 - **Mẫu Thiết Kế (Design Patterns):**
   - **Singleton:** `PageManager` được thiết kế theo mẫu Singleton để đảm bảo chỉ có một thực thể duy nhất quản lý các trang trong toàn bộ ứng dụng.
   - **DAO (Data Access Object):** Các lớp `*Manager` trong package `DBManager` hoạt động như các DAO, tách biệt hoàn toàn logic truy cập dữ liệu ra khỏi logic nghiệp vụ chính.
-  - **MVC (Model-View-Controller) / MVVM-like:** Dự án tuân thủ kiến trúc tách biệt rõ ràng:
-    - **Model:** Gói `oop.grp1.Model`.
-    - **View:** Gói `oop.grp1.GUI`.
-    - **Controller:** Gói `oop.grp1.Control`.
+  - **Model-View-Controller (MVC):** Dự án tuân thủ chặt chẽ mô hình này để phân tách các mối quan tâm:
+    - **Model:** Gói `oop.grp1.Model` định nghĩa các đối tượng dữ liệu.
+    - **View:** Gói `oop.grp1.GUI` xây dựng giao diện người dùng.
+    - **Controller:** Gói `oop.grp1.Control` xử lý logic và luồng dữ liệu.
 
 ---
 
@@ -161,12 +145,21 @@ Dự án được tổ chức thành các package có chức năng riêng biệt
   - `response_content` (TEXT): Câu trả lời của bot.
   - `timestamp` (TEXT): Dấu thời gian.
 
-### 2.4. Kiến Trúc Sử Dụng
+### 2.4. Kiến Trúc MVC
 
-Dự án áp dụng **Kiến trúc 3 lớp (3-Tier Architecture)**:
-1.  **Tầng Giao Diện (Presentation Layer):** Được xây dựng bằng JavaFX. Chịu trách nhiệm hiển thị dữ liệu và nhận tương tác từ người dùng. Toàn bộ các lớp trong gói `oop.grp1.GUI` thuộc tầng này.
-2.  **Tầng Logic Nghiệp Vụ (Business Logic Layer):** Xử lý các yêu cầu từ tầng giao diện, thực hiện các nghiệp vụ chính như lấy dữ liệu từ API, xử lý dữ liệu thô, và giao tiếp với tầng dữ liệu. Gói `oop.grp1.Control` là trung tâm của tầng này.
-3.  **Tầng Truy Cập Dữ Liệu (Data Access Layer):** Chịu trách nhiệm giao tiếp với cơ sở dữ liệu (SQLite). Bao gồm các lớp `*Manager` hoạt động như DAO và các lớp `Model` định nghĩa cấu trúc dữ liệu.
+Dự án áp dụng mô hình kiến trúc **Model-View-Controller (MVC)** để phân tách rõ ràng các thành phần của ứng dụng, tăng tính module hóa và dễ bảo trì:
+
+1.  **Model (Mô hình):**
+    -   **Vai trò:** Quản lý dữ liệu và logic nghiệp vụ của ứng dụng. Nó chứa trạng thái của ứng dụng (ví dụ: dữ liệu cổ phiếu, tin tức) và các quy tắc để thao tác trên dữ liệu đó. Model hoàn toàn không biết về giao diện người dùng.
+    -   **Thành phần trong dự án:** Gói `oop.grp1.Model` (định nghĩa cấu trúc dữ liệu như `Stock`, `News`) và một phần của gói `oop.grp1.Control` (các lớp `*Manager` và `*DF` chịu trách nhiệm truy xuất và xử lý dữ liệu).
+
+2.  **View (Giao diện):**
+    -   **Vai trò:** Chịu trách nhiệm hiển thị dữ liệu từ Model cho người dùng và thu nhận các hành động của người dùng (nhấp chuột, nhập liệu). View không chứa logic nghiệp vụ.
+    -   **Thành phần trong dự án:** Toàn bộ các lớp trong gói `oop.grp1.GUI` (ví dụ: `TrendingstocksPage`, `NewsPage`, `LineChart`, `TableView`).
+
+3.  **Controller (Bộ điều khiển):**
+    -   **Vai trò:** Đóng vai trò trung gian giữa Model và View. Nó nhận đầu vào từ người dùng (qua View), diễn giải chúng thành các hành động mà Model có thể hiểu và thực hiện. Sau khi Model thay đổi, Controller có thể cập nhật View tương ứng.
+    -   **Thành phần trong dự án:** Gói `oop.grp1.Control` và các trình xử lý sự kiện (event handlers) được định nghĩa bên trong các lớp của `GUI`. Ví dụ, khi người dùng nhấp vào nút "Làm mới", một event handler trong View sẽ gọi một phương thức trong Controller, Controller sẽ yêu cầu Model lấy dữ liệu mới, sau đó cập nhật lại View.
 
 ### 2.5. Công Nghệ Sử Dụng
 
