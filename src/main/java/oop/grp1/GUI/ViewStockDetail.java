@@ -16,9 +16,13 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import oop.grp1.Model.Stock;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ViewStockDetail extends VBox {
     private TextField searchField;
@@ -31,11 +35,16 @@ public class ViewStockDetail extends VBox {
     private final ProgressIndicator loadingIndicator;
     private final VBox statisticsPanel;
     private final HBox chartButtonsBox;
+    
+    private DatePicker startDatePicker;
+    private DatePicker endDatePicker;
+    private Button applyDateFilterButton;
+    private CheckBox showAllDataCheckBox;
 
     private String currentTicker = "";
     private List<Stock> currentStockData;
+    private List<Stock> allStockData;
 
-    // Map để theo dõi trạng thái hiển thị của các series
     private Map<String, Boolean> seriesVisibility = new HashMap<>();
 
     public ViewStockDetail() {
@@ -49,8 +58,9 @@ public class ViewStockDetail extends VBox {
         titleLabel.setStyle("-fx-text-fill: #2c3e50;");
 
         HBox searchBox = createSearchSection();
+        HBox dateFilterBox = createDateFilterSection();
 
-        stockInfoLabel = new Label("");
+        stockInfoLabel = new Label("Nhập mã cổ phiếu để xem thông tin chi tiết");
         stockInfoLabel.setFont(Font.font("Arial", 14));
         stockInfoLabel.setStyle("-fx-text-fill: #7f8c8d; -fx-padding: 10px;");
         stockInfoLabel.setWrapText(true);
@@ -76,12 +86,12 @@ public class ViewStockDetail extends VBox {
         chartContainer = new VBox(10);
         chartContainer.setVisible(false);
 
-        // Khởi tạo trạng thái hiển thị cho các series
         initSeriesVisibility();
 
         this.getChildren().addAll(
                 titleLabel,
                 searchBox,
+                dateFilterBox,
                 stockInfoLabel,
                 loadingIndicator,
                 noDataLabel,
@@ -93,7 +103,109 @@ public class ViewStockDetail extends VBox {
         VBox.setVgrow(chartContainer, Priority.ALWAYS);
     }
 
-    // Khởi tạo trạng thái hiển thị ban đầu của các series
+    private HBox createDateFilterSection() {
+        HBox dateFilterBox = new HBox(10);
+        dateFilterBox.setAlignment(Pos.CENTER_LEFT);
+        dateFilterBox.setPadding(new Insets(5, 0, 5, 0));
+
+        Label fromLabel = new Label("Từ ngày:");
+        fromLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+
+        startDatePicker = new DatePicker();
+        startDatePicker.setValue(LocalDate.now().minusDays(30));
+        startDatePicker.setStyle("-fx-font-size: 12px;");
+
+        Label toLabel = new Label("Đến ngày:");
+        toLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+
+        endDatePicker = new DatePicker();
+        endDatePicker.setValue(LocalDate.now());
+        endDatePicker.setStyle("-fx-font-size: 12px;");
+
+        applyDateFilterButton = new Button("Áp dụng");
+        applyDateFilterButton.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        applyDateFilterButton.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 6px 12px;");
+        applyDateFilterButton.setOnMouseEntered(e -> applyDateFilterButton.setStyle("-fx-background-color: #229954; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 6px 12px;"));
+        applyDateFilterButton.setOnMouseExited(e -> applyDateFilterButton.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 6px 12px;"));
+        applyDateFilterButton.setOnAction(e -> applyDateFilter());
+
+        showAllDataCheckBox = new CheckBox("Hiển thị tất cả dữ liệu");
+        showAllDataCheckBox.setFont(Font.font("Arial", 12));
+        showAllDataCheckBox.setOnAction(e -> {
+            if (showAllDataCheckBox.isSelected()) {
+                displayAllData();
+            } else {
+                applyDateFilter();
+            }
+        });
+
+        Button resetDateButton = new Button("Đặt lại");
+        resetDateButton.setFont(Font.font("Arial", 12));
+        resetDateButton.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 6px 12px;");
+        resetDateButton.setOnMouseEntered(e -> resetDateButton.setStyle("-fx-background-color: #e67e22; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 6px 12px;"));
+        resetDateButton.setOnMouseExited(e -> resetDateButton.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white; -fx-border-radius: 5px; -fx-padding: 6px 12px;"));
+        resetDateButton.setOnAction(e -> resetDateFilter());
+
+        dateFilterBox.getChildren().addAll(fromLabel, startDatePicker, toLabel, endDatePicker, 
+                                         applyDateFilterButton, showAllDataCheckBox, resetDateButton);
+        dateFilterBox.setVisible(false);
+
+        return dateFilterBox;
+    }
+
+    private void applyDateFilter() {
+        if (allStockData == null || allStockData.isEmpty()) return;
+
+        LocalDate startDate = startDatePicker.getValue();
+        LocalDate endDate = endDatePicker.getValue();
+
+        if (startDate == null || endDate == null) {
+            showAlert("Vui lòng chọn cả ngày bắt đầu và ngày kết thúc");
+            return;
+        }
+
+        if (startDate.isAfter(endDate)) {
+            showAlert("Ngày bắt đầu không thể sau ngày kết thúc");
+            return;
+        }
+
+        currentStockData = allStockData.stream()
+                .filter(stock -> {
+                    try {
+                        LocalDateTime stockDateTime = LocalDateTime.parse(stock.getTimestamp().replace(" ", "T"));
+                        LocalDate stockDate = stockDateTime.toLocalDate();
+                        return !stockDate.isBefore(startDate) && !stockDate.isAfter(endDate);
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        if (currentStockData.isEmpty()) {
+            showAlert("Không có dữ liệu trong khoảng thời gian đã chọn");
+            return;
+        }
+
+        showAllDataCheckBox.setSelected(false);
+        displayStockData(currentStockData, Stock.getSummaryStatistics(currentTicker));
+    }
+
+    private void displayAllData() {
+        if (allStockData == null || allStockData.isEmpty()) return;
+        
+        currentStockData = allStockData;
+        displayStockData(currentStockData, Stock.getSummaryStatistics(currentTicker));
+    }
+
+    private void resetDateFilter() {
+        startDatePicker.setValue(LocalDate.now().minusDays(30));
+        endDatePicker.setValue(LocalDate.now());
+        showAllDataCheckBox.setSelected(false);
+        if (allStockData != null && !allStockData.isEmpty()) {
+            applyDateFilter();
+        }
+    }
+
     private void initSeriesVisibility() {
         seriesVisibility.put("Giá Mở Cửa", true);
         seriesVisibility.put("Giá Đóng Cửa", true);
@@ -249,8 +361,11 @@ public class ViewStockDetail extends VBox {
                 Platform.runLater(() -> {
                     showLoading(false);
                     if (stockData != null && !stockData.isEmpty()) {
-                        currentStockData = stockData;
-                        displayStockData(stockData, statistics);
+                        allStockData = stockData;
+                        
+                        ((HBox) getChildren().get(2)).setVisible(true);
+                        
+                        applyDateFilter();
                     } else {
                         showNoDataMessage();
                     }
@@ -348,24 +463,15 @@ public class ViewStockDetail extends VBox {
     private void setPriceChartYAxisRange(List<Stock> stockData) {
         if (stockData == null || stockData.isEmpty()) return;
 
-        double minPrice = Double.MAX_VALUE;
-        double maxPrice = Double.MIN_VALUE;
+        double minPrice = stockData.stream()
+                .mapToDouble(stock -> Math.min(Math.min(stock.getOpen(), stock.getClose()), 
+                                             Math.min(stock.getHigh(), stock.getLow())))
+                .min().orElse(0);
 
-        int maxDataPoints = Math.min(12, stockData.size());
-        int step = stockData.size() / maxDataPoints;
-        if (step < 1) step = 1;
-
-        for (int i = stockData.size() - 1; i >= 0; i -= step) {
-            Stock stock = stockData.get(i);
-            minPrice = Math.min(minPrice, stock.getOpen());
-            minPrice = Math.min(minPrice, stock.getClose());
-            minPrice = Math.min(minPrice, stock.getHigh());
-            minPrice = Math.min(minPrice, stock.getLow());
-            maxPrice = Math.max(maxPrice, stock.getOpen());
-            maxPrice = Math.max(maxPrice, stock.getClose());
-            maxPrice = Math.max(maxPrice, stock.getHigh());
-            maxPrice = Math.max(maxPrice, stock.getLow());
-        }
+        double maxPrice = stockData.stream()
+                .mapToDouble(stock -> Math.max(Math.max(stock.getOpen(), stock.getClose()), 
+                                             Math.max(stock.getHigh(), stock.getLow())))
+                .max().orElse(100);
 
         double priceRange = maxPrice - minPrice;
         double buffer = priceRange * 0.05;
@@ -383,18 +489,13 @@ public class ViewStockDetail extends VBox {
     private void setVolumeChartYAxisRange(List<Stock> stockData) {
         if (stockData == null || stockData.isEmpty()) return;
 
-        long minVolume = Long.MAX_VALUE;
-        long maxVolume = Long.MIN_VALUE;
+        long minVolume = stockData.stream()
+                .mapToLong(Stock::getVolume)
+                .min().orElse(0);
 
-        int maxDataPoints = Math.min(12, stockData.size());
-        int step = stockData.size() / maxDataPoints;
-        if (step < 1) step = 1;
-
-        for (int i = stockData.size() - 1; i >= 0; i -= step) {
-            Stock stock = stockData.get(i);
-            minVolume = Math.min(minVolume, stock.getVolume());
-            maxVolume = Math.max(maxVolume, stock.getVolume());
-        }
+        long maxVolume = stockData.stream()
+                .mapToLong(Stock::getVolume)
+                .max().orElse(1000);
 
         long volumeRange = maxVolume - minVolume;
         long buffer = (long) (volumeRange * 0.1);
@@ -415,9 +516,20 @@ public class ViewStockDetail extends VBox {
 
         if (stockData == null || stockData.isEmpty()) return;
 
-        int maxDataPoints = Math.min(12, stockData.size());
-        int step = stockData.size() / maxDataPoints;
-        if (step < 1) step = 1;
+        List<Stock> sortedData = stockData.stream()
+                .sorted((a, b) -> a.getTimestamp().compareTo(b.getTimestamp()))
+                .collect(Collectors.toList());
+
+        int maxDataPoints;
+        if (sortedData.size() <= 50) {
+            maxDataPoints = sortedData.size();
+        } else if (sortedData.size() <= 200) {
+            maxDataPoints = Math.min(50, sortedData.size());
+        } else {
+            maxDataPoints = Math.min(100, sortedData.size());
+        }
+
+        int step = Math.max(1, sortedData.size() / maxDataPoints);
 
         XYChart.Series<String, Number> openSeries = new XYChart.Series<>();
         openSeries.setName("Giá Mở Cửa");
@@ -431,8 +543,8 @@ public class ViewStockDetail extends VBox {
         XYChart.Series<String, Number> lowSeries = new XYChart.Series<>();
         lowSeries.setName("Giá Thấp Nhất");
 
-        for (int i = stockData.size() - 1; i >= 0; i -= step) {
-            Stock stock = stockData.get(i);
+        for (int i = 0; i < sortedData.size(); i += step) {
+            Stock stock = sortedData.get(i);
             String timePointCategory = stock.getShortTimestamp();
 
             XYChart.Data<String, Number> openData = new XYChart.Data<>(timePointCategory, stock.getOpen());
@@ -452,7 +564,6 @@ public class ViewStockDetail extends VBox {
             lowSeries.getData().add(lowData);
         }
 
-        // Thêm series dựa vào trạng thái hiển thị
         if (seriesVisibility.get("Giá Mở Cửa")) {
             priceChart.getData().add(openSeries);
         }
@@ -466,29 +577,25 @@ public class ViewStockDetail extends VBox {
             priceChart.getData().add(lowSeries);
         }
 
-        priceChart.setTitle("Biểu Đồ Biến Động Giá - " + currentTicker);
+        priceChart.setTitle("Biểu Đồ Biến Động Giá - " + currentTicker + 
+                           " (" + maxDataPoints + "/" + sortedData.size() + " điểm)");
 
-        final int finalStep = step;
         Platform.runLater(() -> {
-            setupLineChartDataEvents(stockData);
+            setupLineChartDataEvents(sortedData);
             setupLegendClickEvent();
         });
     }
 
-    // Thiết lập sự kiện click cho legend
     private void setupLegendClickEvent() {
         for (Node node : priceChart.lookupAll(".chart-legend-item")) {
             if (node instanceof Label) {
                 Label legendItem = (Label) node;
                 String seriesName = legendItem.getText();
 
-                // Thiết lập tooltip để hướng dẫn người dùng
                 Tooltip.install(legendItem, new Tooltip("Nhấp để xem riêng " + seriesName + ", nhấp lại để xem tất cả"));
 
-                // Cập nhật giao diện để phản ánh trạng thái hiện tại
                 updateLegendStyle(legendItem, seriesVisibility.getOrDefault(seriesName, false));
 
-                // Thiết lập sự kiện click
                 legendItem.setOnMouseClicked(event -> {
                     boolean allVisible = seriesVisibility.get("Giá Mở Cửa") &&
                             seriesVisibility.get("Giá Đóng Cửa") &&
@@ -496,23 +603,18 @@ public class ViewStockDetail extends VBox {
                             seriesVisibility.get("Giá Thấp Nhất");
 
                     if (allVisible) {
-                        // Nếu tất cả đang hiển thị, nhấp để hiển thị riêng series được chọn
                         seriesVisibility.keySet().forEach(key -> seriesVisibility.put(key, false));
                         seriesVisibility.put(seriesName, true);
                     } else if (seriesVisibility.get(seriesName)) {
-                        // Nếu series đã được chọn, nhấp lại để hiển thị tất cả
                         initSeriesVisibility();
                     } else {
-                        // Hiển thị riêng series được nhấp
                         seriesVisibility.keySet().forEach(key -> seriesVisibility.put(key, false));
                         seriesVisibility.put(seriesName, true);
                     }
 
-                    // Vẽ lại biểu đồ
                     updatePriceChart(currentStockData);
                 });
 
-                // Thiết lập hiệu ứng hover
                 legendItem.setOnMouseEntered(e -> {
                     legendItem.setCursor(javafx.scene.Cursor.HAND);
                     legendItem.setStyle(legendItem.getStyle() + "; -fx-underline: true; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 2, 0, 0, 0)");
@@ -526,7 +628,6 @@ public class ViewStockDetail extends VBox {
         }
     }
 
-    // Cập nhật style của legend item dựa vào trạng thái hiển thị
     private void updateLegendStyle(Label legendItem, boolean visible) {
         String seriesName = legendItem.getText();
         String color;
@@ -556,7 +657,6 @@ public class ViewStockDetail extends VBox {
         }
     }
 
-    // Thiết lập sự kiện cho các cột dữ liệu
     private void setupLineChartDataEvents(List<Stock> stockData) {
         for (int i = 0; i < priceChart.getData().size(); i++) {
             XYChart.Series<String, Number> series = priceChart.getData().get(i);
@@ -712,15 +812,26 @@ public class ViewStockDetail extends VBox {
 
         if (stockData == null || stockData.isEmpty()) return;
 
-        int maxDataPoints = Math.min(12, stockData.size());
-        int step = stockData.size() / maxDataPoints;
-        if (step < 1) step = 1;
+        List<Stock> sortedData = stockData.stream()
+                .sorted((a, b) -> a.getTimestamp().compareTo(b.getTimestamp()))
+                .collect(Collectors.toList());
+
+        int maxDataPoints;
+        if (sortedData.size() <= 50) {
+            maxDataPoints = sortedData.size();
+        } else if (sortedData.size() <= 200) {
+            maxDataPoints = Math.min(50, sortedData.size());
+        } else {
+            maxDataPoints = Math.min(100, sortedData.size());
+        }
+
+        int step = Math.max(1, sortedData.size() / maxDataPoints);
 
         XYChart.Series<String, Number> volumeSeries = new XYChart.Series<>();
         volumeSeries.setName("Khối Lượng Giao Dịch");
 
-        for (int i = stockData.size() - 1; i >= 0; i -= step) {
-            Stock stock = stockData.get(i);
+        for (int i = 0; i < sortedData.size(); i += step) {
+            Stock stock = sortedData.get(i);
             String timePointCategory = stock.getShortTimestamp();
             XYChart.Data<String, Number> volumeData = new XYChart.Data<>(timePointCategory, stock.getVolume());
             volumeData.setExtraValue(stock);
@@ -728,7 +839,8 @@ public class ViewStockDetail extends VBox {
         }
 
         volumeChart.getData().add(volumeSeries);
-        volumeChart.setTitle("Biểu Đồ Khối Lượng Giao Dịch - " + currentTicker);
+        volumeChart.setTitle("Biểu Đồ Khối Lượng Giao Dịch - " + currentTicker + 
+                           " (" + maxDataPoints + "/" + sortedData.size() + " điểm)");
 
         Platform.runLater(() -> {
             if (!volumeChart.getData().isEmpty()) {
@@ -742,7 +854,8 @@ public class ViewStockDetail extends VBox {
                                 "-fx-padding: 5px;"
                         );
                         Tooltip tooltip = new Tooltip(
-                                "Khối lượng: " + Stock.formatVolume(item.getYValue().intValue())
+                                "Khối lượng: " + Stock.formatVolume(item.getYValue().intValue()) +
+                                "\nThời gian: " + ((Stock) item.getExtraValue()).getFormattedTimestamp()
                         );
                         Tooltip.install(item.getNode(), tooltip);
                     }
@@ -761,6 +874,7 @@ public class ViewStockDetail extends VBox {
         chartButtonsBox.setVisible(false);
         chartContainer.setVisible(false);
         noDataLabel.setVisible(false);
+        ((HBox) getChildren().get(2)).setVisible(false);
     }
 
     private void showNoDataMessage() {
@@ -789,8 +903,13 @@ public class ViewStockDetail extends VBox {
         searchField.clear();
         priceChart.getData().clear();
         volumeChart.getData().clear();
+        allStockData = null;
+        currentStockData = null;
         hideComponents();
         stockInfoLabel.setText("Nhập mã cổ phiếu để xem thông tin chi tiết");
         stockInfoLabel.setStyle("-fx-text-fill: #7f8c8d; -fx-padding: 10px;");
+        stockInfoLabel.setVisible(true);
+        
+        resetDateFilter();
     }
 }

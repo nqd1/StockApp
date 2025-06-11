@@ -129,11 +129,6 @@
             <artifactId>fontawesomefx</artifactId>
             <version>8.9</version> <!-- hoặc version mới nhất -->
         </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>21</version> <!-- hoặc phù hợp với phiên bản bạn đang dùng -->
-        </dependency>
 
         <!-- Ikonli core -->
         <dependency>
