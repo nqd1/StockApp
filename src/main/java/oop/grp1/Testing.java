@@ -1,15 +1,21 @@
 package oop.grp1;
 
-import oop.grp1.Control.DBManager.NewsManager;
+import oop.grp1.Control.DBManager.StockManager;
+
 import java.util.List;
 import java.util.Arrays;
 
 
 public class Testing{
     public static void main(String args[]){
-        List<String> top30Stocks = Arrays.asList("AAPL","MSFT","GOOGL","AMZN","TSLA","NVDA","META","BRK.B","UNH","JNJ","V","PG","JPM","HD","MA","XOM","PFE","KO","PEP","BAC","MRK","ABBV","WMT","CVX","DIS","CSCO","ORCL","INTC","T","VZ");
-        NewsManager manager = new NewsManager();
-        for(String ticker : top30Stocks){
+       List<String> otherStocks = Arrays.asList(
+    "ADBE", "NFLX", "COST", "CRM", "TSM", "AVGO", "AMD", "QCOM", "TXN", "AMAT",
+    "LIN", "HON", "SBUX", "MCD", "LLY", "BMY", "GE", "UPS", "BA", "CAT",
+    "DE", "NEE", "SO", "DUK", "MDT"
+);
+
+        StockManager manager = new StockManager();
+        for(String ticker : otherStocks){
             manager.fetchAndStore(ticker);
         }
     }
