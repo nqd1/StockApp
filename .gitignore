@@ -40,3 +40,5 @@ build/
 
 .env
 target/
+
+RM/videos/demo.mp4
