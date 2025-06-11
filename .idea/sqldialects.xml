@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="SqlDialectMappings">
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/82d7d233-b7e0-46eb-9e80-472ef339b1ee/console_1.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/oop/grp1/Control/DBManager/NewsManager.java" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/oop/grp1/Control/DBManager/StockManager.java" dialect="GenericSQL" />
-  </component>
-</project>
