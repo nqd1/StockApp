@@ -701,7 +701,7 @@ public class TrendingstocksPage extends VBox {
         FontIcon phoneIcon = new FontIcon(FontAwesomeSolid.PHONE);
         phoneIcon.setIconColor(Color.valueOf("#198754"));
         phoneIcon.setIconSize(12);
-        Label phoneLabel = new Label("0123-456-789");
+        Label phoneLabel = new Label("0909-090-909");
         phoneLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #6c757d;");
         phoneBox.getChildren().addAll(phoneIcon, phoneLabel);
 
