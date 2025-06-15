@@ -722,7 +722,7 @@ public class TrendingstocksPage extends VBox {
         bottomRow.setAlignment(Pos.CENTER);
         bottomRow.setPadding(new Insets(15, 0, 0, 0));
 
-        Label copyright = new Label("© 2024 Stock Market Tracker v1.0 | Phát triển bởi OOP Group 1");
+        Label copyright = new Label("© 2024 Stock Market Tracker v1.0 | Phát triển bởi Nhóm 1 - OOP");
         copyright.setStyle("-fx-font-size: 11px; -fx-text-fill: #868e96;");
 
         FontIcon heartIcon = new FontIcon(FontAwesomeSolid.HEART);
