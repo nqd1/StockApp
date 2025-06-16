@@ -782,4 +782,26 @@ public class News {
     public int hashCode() {
         return Objects.hash(url);
     }
+
+    public String getSentimentLabelTranslated() {
+        if (sentimentLabel.equalsIgnoreCase("Bullish")) {
+            return "Tích cực";
+        } else if (sentimentLabel.equalsIgnoreCase("Bearish")) {
+            return "Tiêu cực";
+        } else if (sentimentLabel.equalsIgnoreCase("Neutral")) {
+            return "Trung lập";
+        } else if (sentimentLabel.equalsIgnoreCase("Mixed")) {
+            return "Hỗn hợp";
+        } else if (sentimentLabel.equalsIgnoreCase("Very Bullish")) {
+            return "Rất tích cực";
+        } else if (sentimentLabel.equalsIgnoreCase("Very Bearish")) {
+            return "Rất tiêu cực";
+        } else if (sentimentLabel.equalsIgnoreCase("Somewhat-Bullish")) {
+            return "Khá tích cực";
+        } else if (sentimentLabel.equalsIgnoreCase("Somewhat-Bearish")) {
+            return "Khá tiêu cực";
+        } else {
+            return sentimentLabel;
+        }
+    }
 }

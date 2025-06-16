@@ -248,10 +248,10 @@ public class NewsPage extends VBox {
         HBox sentimentBox = new HBox(10);
         sentimentBox.setAlignment(Pos.CENTER_LEFT);
         
-        Label sentimentLabel = new Label("Cảm xúc: " + news.getSentimentLabel());
+        Label sentimentLabel = new Label("Cảm xúc: " + news.getSentimentLabelTranslated());
         sentimentLabel.setStyle(getSentimentStyle(news.getSentimentLabel()));
         
-        Label scoreLabel = new Label("Điểm: " + news.getFormattedSentimentScore());
+        Label scoreLabel = new Label("Điểm tích cực: " + news.getFormattedSentimentScore());
         scoreLabel.setStyle("-fx-text-fill: black;");
         
         sentimentBox.getChildren().addAll(sentimentLabel, scoreLabel);
