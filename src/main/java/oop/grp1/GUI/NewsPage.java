@@ -15,6 +15,8 @@ import javafx.application.Platform;
 import javafx.scene.effect.DropShadow;
 import javafx.collections.FXCollections;
 import javafx.stage.Stage;
+import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -336,13 +338,21 @@ public class NewsPage extends VBox {
         try {
             // Tạo cửa sổ popup mới để hiển thị nội dung URL
             Stage webViewStage = new Stage();
-            webViewStage.setTitle("Tin tức");
+            webViewStage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            
+            // Tạo custom title bar cho cửa sổ tin tức
+            HBox customTitleBar = createNewsWindowTitleBar(webViewStage);
             
             WebView webView = new WebView();
             WebEngine webEngine = webView.getEngine();
             webEngine.load(url);
             
-            Scene scene = new Scene(webView, 1000, 600);
+            // Tạo layout chính với title bar và webview
+            VBox mainLayout = new VBox();
+            mainLayout.getChildren().addAll(customTitleBar, webView);
+            VBox.setVgrow(webView, Priority.ALWAYS);
+            
+            Scene scene = new Scene(mainLayout, 1000, 600);
             webViewStage.setScene(scene);
             webViewStage.show();
         } catch (Exception e) {
@@ -355,6 +365,90 @@ public class NewsPage extends VBox {
             alert.setContentText("Vui lòng kiểm tra kết nối internet hoặc sao chép URL để mở trong trình duyệt của bạn.");
             alert.showAndWait();
         }
+    }
+    
+    private HBox createNewsWindowTitleBar(Stage stage) {
+        HBox titleBar = new HBox();
+        titleBar.setPrefHeight(40);
+        titleBar.setStyle("-fx-background-color: linear-gradient(to right, #2c3e50, #34495e); -fx-border-color: #1a252f; -fx-border-width: 0 0 1 0;");
+        titleBar.setPadding(new Insets(5, 10, 5, 10));
+        titleBar.setAlignment(Pos.CENTER_LEFT);
+        
+        // Phần bên trái với icon và tiêu đề
+        HBox leftSection = new HBox(10);
+        leftSection.setAlignment(Pos.CENTER_LEFT);
+        
+        // Icon tin tức
+        FontIcon newsIcon = new FontIcon(FontAwesomeSolid.NEWSPAPER);
+        newsIcon.setIconSize(20);
+        newsIcon.setIconColor(javafx.scene.paint.Color.WHITE);
+        
+        // Tiêu đề cửa sổ
+        Label titleLabel = new Label("Tin tức");
+        titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
+        
+        leftSection.getChildren().addAll(newsIcon, titleLabel);
+        
+        // Spacer để đẩy nút đóng sang phải
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        
+        // Nút đóng giống như trong CustomTitleBar
+        Button closeButton = createControlButton(FontAwesomeSolid.TIMES, "#e74c3c");
+        closeButton.setOnAction(e -> stage.close());
+        
+        titleBar.getChildren().addAll(leftSection, spacer, closeButton);
+        
+        // Cho phép kéo cửa sổ
+        titleBar.setOnMousePressed(event -> {
+            if (event.isPrimaryButtonDown()) {
+                stage.setUserData(new double[]{event.getSceneX(), event.getSceneY()});
+            }
+        });
+        
+        titleBar.setOnMouseDragged(event -> {
+            if (event.isPrimaryButtonDown() && stage.getUserData() != null) {
+                double[] offset = (double[]) stage.getUserData();
+                stage.setX(event.getScreenX() - offset[0]);
+                stage.setY(event.getScreenY() - offset[1]);
+            }
+        });
+        
+        return titleBar;
+    }
+    
+    private Button createControlButton(FontAwesomeSolid icon, String hoverColor) {
+        Button button = new Button();
+        FontIcon fontIcon = new FontIcon(icon);
+        fontIcon.setIconSize(12);
+        fontIcon.setIconColor(javafx.scene.paint.Color.WHITE);
+        button.setGraphic(fontIcon);
+        
+        button.setPrefSize(35, 30);
+        button.setStyle(
+            "-fx-background-color: transparent;" +
+            "-fx-border-color: transparent;" +
+            "-fx-cursor: hand;"
+        );
+
+        // Hiệu ứng hover
+        button.setOnMouseEntered(e -> {
+            button.setStyle(
+                "-fx-background-color: " + hoverColor + ";" +
+                "-fx-border-color: transparent;" +
+                "-fx-cursor: hand;"
+            );
+        });
+
+        button.setOnMouseExited(e -> {
+            button.setStyle(
+                "-fx-background-color: transparent;" +
+                "-fx-border-color: transparent;" +
+                "-fx-cursor: hand;"
+            );
+        });
+
+        return button;
     }
     
     private void addLoadMoreButton() {
