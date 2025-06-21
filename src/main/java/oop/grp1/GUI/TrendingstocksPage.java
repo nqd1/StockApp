@@ -25,6 +25,10 @@ public class TrendingstocksPage extends VBox {
     private final TableView<StockData> topGiamGiaTable;
     private final TableView<StockChangeData> topThayDoiTable;
 
+    // Dùng để duyệt danh sách ticker theo vòng tròn, mỗi lần tối đa 25 mã
+    private int currentTickerIndex = 0;
+    private static final int BATCH_SIZE = 25;
+
     public TrendingstocksPage() {
         this.getStyleClass().add("page-background");
 
@@ -505,13 +509,28 @@ public class TrendingstocksPage extends VBox {
             // Cờ để kiểm tra thành công
             AtomicBoolean success = new AtomicBoolean(true);
 
-            // Lấy tất cả ticker và cập nhật
+            // Lấy tất cả ticker và cập nhật theo lô (batch) 25 mã, duyệt vòng tròn
             List<String> allTickers = Stock.getAllTickers();
 
-            for (String ticker : allTickers) {
-                boolean result = Stock.fetchAndStoreStock(ticker);
-                if (!result) {
-                    success.set(false);
+            int total = allTickers.size();
+            if (total == 0) {
+                success.set(false);
+            } else {
+                // Xác định batch hiện tại
+                List<String> batchTickers = new ArrayList<>();
+                for (int i = 0; i < BATCH_SIZE && i < total; i++) {
+                    int idx = (currentTickerIndex + i) % total;
+                    batchTickers.add(allTickers.get(idx));
+                }
+
+                // Cập nhật chỉ số cho lần tiếp theo
+                currentTickerIndex = (currentTickerIndex + BATCH_SIZE) % total;
+
+                for (String ticker : batchTickers) {
+                    boolean result = Stock.fetchAndStoreStock(ticker);
+                    if (!result) {
+                        success.set(false);
+                    }
                 }
             }
 
@@ -557,7 +576,9 @@ public class TrendingstocksPage extends VBox {
                     errorAlert.show();
                 }
             });        }).start();
-    }    /**
+    }
+
+    /**
      * Tạo footer cho trang
      */
     private VBox createFooter() {
