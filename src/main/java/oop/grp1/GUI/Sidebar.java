@@ -21,6 +21,7 @@ public class Sidebar extends VBox {
     private final Button stockDetailButton;
     private final Button viewStockButton;
     private final Button chatbotButton;
+    private final Button smartChatbotButton;
     
     private final double expandedWidth = 210;
     private final double collapsedWidth = 50;
@@ -64,6 +65,7 @@ public class Sidebar extends VBox {
         stockDetailButton = createButton("Danh Sách Cổ Phiếu", FontAwesomeSolid.LIST);
         viewStockButton = createButton("Chi Tiết Cổ Phiếu", FontAwesomeSolid.CHART_BAR);
         chatbotButton = createButton("Chatbot", FontAwesomeSolid.ROBOT);
+        smartChatbotButton = createButton("Smart AI", FontAwesomeSolid.BRAIN);
 
         // Initial visibility for buttons
         setButtonsVisibility(false);
@@ -74,13 +76,15 @@ public class Sidebar extends VBox {
         stockDetailButton.setOnAction(e -> PageManager.getInstance().showPage("StockDetail"));
         viewStockButton.setOnAction(e -> PageManager.getInstance().showPage("ViewStockDetail"));
         chatbotButton.setOnAction(e -> PageManager.getInstance().showPage("ChatbotPage"));
+        smartChatbotButton.setOnAction(e -> PageManager.getInstance().showPage("SmartChatbotPage"));
 
         this.getChildren().addAll(
             trendingButton,
             newsButton,
             stockDetailButton,
             viewStockButton,
-            chatbotButton
+            chatbotButton,
+            smartChatbotButton
         );
 
         // Mouse events for expand/collapse
@@ -133,5 +137,6 @@ public class Sidebar extends VBox {
         stockDetailButton.setText(visible ? "Danh Sách Cổ Phiếu" : "");
         viewStockButton.setText(visible ? "Chi Tiết Cổ Phiếu" : "");
         chatbotButton.setText(visible ? "Chatbot" : "");
+        smartChatbotButton.setText(visible ? "Smart AI" : "");
     }
 }

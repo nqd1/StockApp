@@ -53,6 +53,8 @@ public class PageManager {
                 return new ViewStockDetail();
             case "ChatbotPage":
                 return new ChatbotPage();
+            case "SmartChatbotPage":
+                return new SmartChatbotPage();
             default:
                 System.err.println("Unknown page: " + pageName);
                 return null;
