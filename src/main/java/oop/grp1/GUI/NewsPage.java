@@ -17,6 +17,7 @@ import javafx.collections.FXCollections;
 import javafx.stage.Stage;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import oop.grp1.Model.News;
 
@@ -25,6 +26,7 @@ public class NewsPage extends VBox {
     private VBox newsContainer;
     private TextField searchField;
     private ComboBox<String> searchTypeComboBox;
+    private ComboBox<String> sortTypeComboBox;
     private Button searchButton;
     private Button refreshButton;
     
@@ -69,7 +71,7 @@ public class NewsPage extends VBox {
         loadAllNews();
     }
     
-    private HBox createSearchBar() {
+        private HBox createSearchBar() {
         HBox searchBar = new HBox(10);
         searchBar.setPadding(new Insets(10));
         searchBar.setAlignment(Pos.CENTER_LEFT);
@@ -91,18 +93,29 @@ public class NewsPage extends VBox {
         searchTypeComboBox = new ComboBox<>(FXCollections.observableArrayList("Theo tiêu đề", "Theo mã cổ phiếu"));
         searchTypeComboBox.setValue("Theo tiêu đề");
         searchTypeComboBox.setStyle("-fx-background-color: #f8f8f8;");
-          // Nút tìm kiếm
-        searchButton = new Button("Tìm kiếm");
-        searchButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+        
+        // ComboBox để chọn loại sắp xếp
+        sortTypeComboBox = new ComboBox<>(FXCollections.observableArrayList(
+            "Theo thời gian", 
+            "Sắp xếp theo điểm tích cực chung (cao đến thấp)",
+            "Sắp xếp theo điểm tích cực chung (thấp đến cao)",
+            "Sắp xếp theo điểm tích cực với mã cổ phiếu (cao đến thấp)"));
+        sortTypeComboBox.setValue("Theo thời gian");
+        sortTypeComboBox.setPrefWidth(300);
+        sortTypeComboBox.setStyle("-fx-background-color: #f8f8f8;");
+        
+        searchButton = new Button("🔍");
+        searchButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 16px;");
+        searchButton.setTooltip(new Tooltip("Tìm kiếm"));
         searchButton.setOnAction(_ -> performSearch());
         
-        // Nút làm mới
-        refreshButton = new Button("Làm mới");
-        refreshButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white;");
+        refreshButton = new Button("🔄");
+        refreshButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 16px;");
+        refreshButton.setTooltip(new Tooltip("Làm mới"));
         refreshButton.setOnAction(_ -> refreshNews());
         
         // Thêm các phần tử vào thanh tìm kiếm
-        searchBar.getChildren().addAll(searchField, searchTypeComboBox, searchButton, refreshButton);
+        searchBar.getChildren().addAll(searchField, searchTypeComboBox, sortTypeComboBox, searchButton, refreshButton);
         
         return searchBar;
     }
@@ -110,6 +123,7 @@ public class NewsPage extends VBox {
     private void performSearch() {
         String keyword = searchField.getText().trim();
         String searchType = searchTypeComboBox.getValue();
+        String sortType = sortTypeComboBox.getValue();
         
         if (keyword.isEmpty()) {
             loadAllNews();
@@ -124,8 +138,15 @@ public class NewsPage extends VBox {
             searchResults = News.searchNews(keyword);
         } else { // Theo mã cổ phiếu
             // Chuyển đổi keyword thành chữ hoa vì ticker thường được lưu ở dạng chữ hoa
-            searchResults = News.getNewsByTicker(keyword.toUpperCase());
+            if ("Sắp xếp theo điểm tích cực với mã cổ phiếu (cao đến thấp)".equals(sortType)) {
+                searchResults = News.getAllNewsSortedByTickerSentiment(keyword.toUpperCase());
+            } else {
+                searchResults = News.getNewsByTicker(keyword.toUpperCase());
+            }
         }
+        
+        // Áp dụng sắp xếp theo overall sentiment score
+        searchResults = applySortingByOverallSentiment(searchResults, sortType);
         
         if (searchResults.isEmpty()) {
             Label noResultsLabel;
@@ -179,12 +200,31 @@ public class NewsPage extends VBox {
         }).start();
     }
     
+    // Áp dụng sắp xếp theo điểm tích cực chung (overall sentiment score)
+    private List<News> applySortingByOverallSentiment(List<News> newsList, String sortType) {
+        if ("Sắp xếp theo điểm tích cực chung (cao đến thấp)".equals(sortType)) {
+            return newsList.stream()
+                    .sorted((n1, n2) -> Double.compare(n2.getSentimentScore(), n1.getSentimentScore()))
+                    .collect(Collectors.toList());
+        } else if ("Sắp xếp theo điểm tích cực chung (thấp đến cao)".equals(sortType)) {
+            return newsList.stream()
+                    .sorted((n1, n2) -> Double.compare(n1.getSentimentScore(), n2.getSentimentScore()))
+                    .collect(Collectors.toList());
+        } else {
+            return newsList; // Theo thời gian (không thay đổi thứ tự)
+        }
+    }
+    
     private void loadAllNews() {
         // Xóa tin tức hiện tại
         newsContainer.getChildren().clear();
         
         // Lấy tất cả tin tức từ cơ sở dữ liệu
         List<News> allNews = News.getAllNews();
+        String sortType = sortTypeComboBox.getValue();
+        
+        // Áp dụng sắp xếp
+        allNews = applySortingByOverallSentiment(allNews, sortType);
         
         if (allNews.isEmpty()) {
             Label noNewsLabel = new Label("Không có tin tức nào");

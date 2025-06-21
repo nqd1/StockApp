@@ -272,11 +272,29 @@ public class News {
                 .orElse(null);
     }
     
-    // ============ DATABASE OPERATIONS ============
     
-    /**
-     * Get all news from database
-     */
+    // Sắp xếp tin tức theo điểm tích cực chung (overall sentiment score)
+    public static List<News> getAllNewsSortedByOverallSentiment() {
+        List<News> allNews = getAllNews();
+        return allNews.stream()
+                .sorted((n1, n2) -> Double.compare(n2.getSentimentScore(), n1.getSentimentScore()))
+                .collect(Collectors.toList());
+    }
+    
+    // Sắp xếp tin tức theo điểm tích cực với mã cổ phiếu (ticker sentiment score)
+    public static List<News> getAllNewsSortedByTickerSentiment(String ticker) {
+        List<News> tickerNews = getNewsByTicker(ticker);
+        return tickerNews.stream()
+                .filter(news -> news.getTickerSentiment(ticker) != null)
+                .sorted((n1, n2) -> {
+                    TickerSentiment ts1 = n1.getTickerSentiment(ticker);
+                    TickerSentiment ts2 = n2.getTickerSentiment(ticker);
+                    return Double.compare(ts2.getSentimentScore(), ts1.getSentimentScore());
+                })
+                .collect(Collectors.toList());
+    }
+    
+    // Get all news from database
     public static List<News> getAllNews() {
         List<News> newsList = new ArrayList<>();
         String sql = "SELECT * FROM news_data ORDER BY time_published DESC";
