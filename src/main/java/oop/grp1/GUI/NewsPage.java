@@ -280,9 +280,9 @@ public class NewsPage extends VBox {
         timeLabel.setStyle("-fx-text-fill: #666;");
         infoBox.getChildren().addAll(sourceLabel, timeLabel);
         
-        // Tóm tắt tin tức
-        Label summaryLabel = new Label(news.getTruncatedSummary(50));
+        Label summaryLabel = new Label(news.getSummary());
         summaryLabel.setWrapText(true);
+        summaryLabel.setStyle("-fx-text-fill: #333; -fx-font-size: 14px;");
         
         // Phân tích cảm xúc
         HBox sentimentBox = new HBox(10);
