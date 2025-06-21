@@ -16,7 +16,7 @@ public class Main extends Application {
         MainLayout mainLayout = new MainLayout(primaryStage);
         mainLayout.getStyleClass().add("main-layout");
         
-        Scene scene = new Scene(mainLayout, 1600, 900);
+        Scene scene = new Scene(mainLayout, 1600 , 900);
         scene.setFill(Color.TRANSPARENT);
         
         // Add CSS for hiding scrollbars and custom styling
